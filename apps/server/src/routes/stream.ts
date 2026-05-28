@@ -2,7 +2,7 @@ import { mkdir } from "node:fs/promises"
 import { dirname, extname, resolve } from "node:path"
 import { del, halt, json, pipeline, post } from "@atlas/server"
 import { romPath, savePath } from "@outvie/library"
-import { authId, guard } from "../auth/index.ts"
+import { guard } from "../auth/index.ts"
 import { app } from "../state.ts"
 
 type CreateBody = { gameId?: string }
@@ -27,18 +27,9 @@ export const streamRoutes = (secret: string) => [
   post(
     "/api/stream/sessions",
     pipeline(guard(secret))(async (c) => {
-      const ownerId = authId(c)
-      const { store, cfg, db } = app()
+      const { store, cfg } = app()
       const body = (await c.request.json().catch(() => ({}))) as CreateBody
       if (!body.gameId) return halt(c, 400, { error: "gameId required" })
-
-      const owner = (await db.one({
-        text: "SELECT owner_id FROM games WHERE id = $1",
-        values: [body.gameId],
-      })) as { owner_id: number | null } | null
-      if (owner && owner.owner_id !== null && owner.owner_id !== ownerId) {
-        return halt(c, 404, { error: "game not found" })
-      }
 
       const game = await store.get(body.gameId)
       if (!game) return halt(c, 404, { error: "game not found" })

@@ -2,7 +2,7 @@ import { extname } from "node:path"
 import { token } from "@atlas/auth"
 import { assign, type Conn, get, halt, pipe, pipeline, putHeader } from "@atlas/server"
 import { romPath } from "@outvie/library"
-import { type AuthClaims, authId } from "../auth/index.ts"
+import type { AuthClaims } from "../auth/index.ts"
 import { app } from "../state.ts"
 
 // ROM-specific guard. Accepts either an `Authorization: Bearer …` header
@@ -43,17 +43,8 @@ export const romRoutes = (secret: string) => [
   get(
     "/api/games/:id/rom",
     pipeline(romGuard(secret))(async (c) => {
-      const ownerId = authId(c)
       const id = c.params.id
       if (!id) return halt(c, 400, { error: "id required" })
-
-      const owner = (await app().db.one({
-        text: "SELECT owner_id FROM games WHERE id = $1",
-        values: [id],
-      })) as { owner_id: number | null } | null
-      if (owner && owner.owner_id !== null && owner.owner_id !== ownerId) {
-        return halt(c, 404, { error: "not found" })
-      }
 
       const game = await app().store.get(id)
       if (!game) return halt(c, 404, { error: "not found" })

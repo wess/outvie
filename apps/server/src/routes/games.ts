@@ -20,31 +20,27 @@ const filenameFrom = (req: Request): string => {
 
 const KNOWN_SYSTEMS = new Set(["nes", "snes", "genesis"])
 
+// Outvie on the homelab is a shared library — any signed-in user sees
+// every game. owner_id stays on the row for audit (who uploaded it) but
+// doesn't gate visibility or access.
 export const gamesRoutes = (secret: string) => [
   get(
     "/api/games",
     pipeline(guard(secret))(async (c) => {
-      const ownerId = authId(c)
       const { store } = app()
       const sys = c.query.system
       const system = sys && KNOWN_SYSTEMS.has(sys) ? (sys as "nes" | "snes" | "genesis") : undefined
-      return json(c, 200, await store.list({ system, ownerId }))
+      return json(c, 200, await store.list({ system }))
     }),
   ),
 
   get(
     "/api/games/:id",
     pipeline(guard(secret))(async (c) => {
-      const ownerId = authId(c)
       const id = c.params.id
       if (!id) return halt(c, 400, { error: "id required" })
       const game = await app().store.get(id)
       if (!game) return halt(c, 404, { error: "not found" })
-      // Ownership scope — a game's owner is the only one who can see it.
-      // System-owned (NULL owner) rows are accessible to everyone, mostly
-      // for back-compat with the pre-auth library.
-      const owner = await ownerOf(id)
-      if (owner !== null && owner !== ownerId) return halt(c, 404, { error: "not found" })
       return json(c, 200, game)
     }),
   ),
@@ -81,23 +77,12 @@ export const gamesRoutes = (secret: string) => [
   del(
     "/api/games/:id",
     pipeline(guard(secret))(async (c) => {
-      const ownerId = authId(c)
       const id = c.params.id
       if (!id) return halt(c, 400, { error: "id required" })
       const game = await app().store.get(id)
       if (!game) return halt(c, 404, { error: "not found" })
-      const owner = await ownerOf(id)
-      if (owner !== null && owner !== ownerId) return halt(c, 404, { error: "not found" })
       await app().store.remove(game.id)
       return text(c, 204, "")
     }),
   ),
 ]
-
-const ownerOf = async (gameId: string): Promise<number | null> => {
-  const row = (await app().db.one({
-    text: "SELECT owner_id FROM games WHERE id = $1",
-    values: [gameId],
-  })) as { owner_id: number | null } | null
-  return row?.owner_id ?? null
-}
