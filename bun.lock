@@ -289,7 +289,7 @@
 
     "@vitejs/plugin-react": ["@vitejs/plugin-react@4.7.0", "", { "dependencies": { "@babel/core": "^7.28.0", "@babel/plugin-transform-react-jsx-self": "^7.27.1", "@babel/plugin-transform-react-jsx-source": "^7.27.1", "@rolldown/pluginutils": "1.0.0-beta.27", "@types/babel__core": "^7.20.5", "react-refresh": "^0.17.0" }, "peerDependencies": { "vite": "^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0" } }, "sha512-gUu9hwfWvvEDBBmgtAowQCojwZmJ5mcLn3aufeCsitijs3+f2NsrPtlAWIR6OPiqljl96GVCUbLe0HyqIpVaoA=="],
 
-    "atlas": ["atlas@github:wess/atlas#054a2c9", { "dependencies": { "zod": "^3.23.0" }, "peerDependencies": { "@mantine/core": "^7.0.0", "@mantine/form": "^7.0.0", "@mantine/hooks": "^7.0.0", "@tanstack/react-table": "^8.0.0", "lucide-react": "^0.468.0", "react": "^19.0.0", "react-dom": "^19.0.0", "typescript": "^5" }, "optionalPeers": ["@mantine/core", "@mantine/form", "@mantine/hooks", "@tanstack/react-table", "lucide-react", "react", "react-dom"] }, "wess-atlas-054a2c9", "sha512-5TNjZifdK9IQd9rqOVt0wqYc4V3dKr1pwSKuGQK6dH/7RDVYzZv/GoC5f6JfUt7Ke9yGN05T9Obh6qbVlc2o0w=="],
+    "atlas": ["atlas@github:wess/atlas#308b65d", { "dependencies": { "zod": "^3.23.0" }, "peerDependencies": { "@mantine/core": "^7.0.0", "@mantine/form": "^7.0.0", "@mantine/hooks": "^7.0.0", "@tanstack/react-table": "^8.0.0", "lucide-react": "^0.468.0", "react": "^19.0.0", "react-dom": "^19.0.0", "typescript": "^5" }, "optionalPeers": ["@mantine/core", "@mantine/form", "@mantine/hooks", "@tanstack/react-table", "lucide-react", "react", "react-dom"] }, "wess-atlas-308b65d", "sha512-fe0HCIrerGSwgQ04kEComlzBQ9QVNOV7Q6cWKizlFxmUYW5LTeLuzC5EjYv75BJbh4setE4WK0GuHMppkyj0Bg=="],
 
     "baseline-browser-mapping": ["baseline-browser-mapping@2.10.32", "", { "bin": { "baseline-browser-mapping": "dist/cli.cjs" } }, "sha512-wbPvpyjJPC0zdfdKXxqEL3Ea+bOMD/87X4lftiJkkaBiuG6ALQy1SLmEd7BSmVCuwCQsBrCamgBoLyfFDD1EPg=="],
 
@@ -410,7 +410,5 @@
     "yallist": ["yallist@3.1.1", "", {}, "sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g=="],
 
     "zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
-
-    "@outvie/library/atlas": ["atlas@github:wess/atlas#308b65d", { "dependencies": { "zod": "^3.23.0" }, "peerDependencies": { "@mantine/core": "^7.0.0", "@mantine/form": "^7.0.0", "@mantine/hooks": "^7.0.0", "@tanstack/react-table": "^8.0.0", "lucide-react": "^0.468.0", "react": "^19.0.0", "react-dom": "^19.0.0", "typescript": "^5" }, "optionalPeers": ["@mantine/core", "@mantine/form", "@mantine/hooks", "@tanstack/react-table", "lucide-react", "react", "react-dom"] }, "wess-atlas-308b65d", "sha512-fe0HCIrerGSwgQ04kEComlzBQ9QVNOV7Q6cWKizlFxmUYW5LTeLuzC5EjYv75BJbh4setE4WK0GuHMppkyj0Bg=="],
   }
 }
