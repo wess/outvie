@@ -1,0 +1,33 @@
+node_modules
+.DS_Store
+*.log
+dist
+build
+.env
+.env.local
+
+# Outvie data — never commit user libraries, saves, or the index
+data/
+roms/
+saves/
+states/
+outvie.db
+outvie.db-journal
+outvie.db-shm
+outvie.db-wal
+
+# Rust build output for the streaming engine
+engine/target/
+
+# ROM and save-state binaries are user property; keep them out of source.
+# Add new system extensions here as they come online (gba, gbc, n64, etc.).
+*.nes
+*.sfc
+*.smc
+*.fds
+*.unf
+*.gen
+*.smd
+*.state
+*.srm
+*.sav

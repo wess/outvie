@@ -1,0 +1,35 @@
+{
+  "name": "outvie",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "bun run scripts/dev.ts",
+    "dev:server": "bun run --filter @outvie/server dev",
+    "dev:web": "bun run --filter @outvie/web dev",
+    "dev:engine": "cd engine && cargo run",
+    "engine:build": "cd engine && cargo build --release",
+    "seed": "bun run scripts/seed.ts",
+    "build": "bun run --filter @outvie/web build && bun run --filter @outvie/server build",
+    "docker:build": "docker build -t outvie:local .",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "check": "bunx biome check packages/ apps/",
+    "tidy": "bunx biome check --write packages/ apps/",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "atlas": "github:wess/atlas#main"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.10",
+    "@outvie/core": "workspace:*",
+    "@outvie/library": "workspace:*",
+    "@types/bun": "latest",
+    "typescript": "^5.6.0"
+  }
+}

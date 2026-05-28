@@ -1,0 +1,20 @@
+services:
+  outvie:
+    build: .
+    image: outvie:local
+    container_name: outvie
+    restart: unless-stopped
+    ports:
+      - "4290:4290"
+    volumes:
+      - outvie-data:/data
+    environment:
+      WEB_ORIGIN: http://localhost:4290
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:4290/api/health || exit 1"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  outvie-data:
