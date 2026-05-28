@@ -37,18 +37,19 @@ WORKDIR /app
 
 # Runtime deps:
 #  - tini + ca-certs: process supervision + TLS roots
-#  - libretro-*: drop-in emulator cores loaded by the engine
-#    (live in Debian's non-free component)
 #  - git: bun install needs it to fetch atlas from github:wess/atlas
-RUN echo "deb http://deb.debian.org/debian bookworm main contrib non-free non-free-firmware" \
-      > /etc/apt/sources.list.d/contrib-nonfree.list \
-  && apt-get update \
+#
+# Server-side libretro cores are NOT bundled — the homelab deploy
+# doesn't render to a screen, it only stores ROMs. The browser-side
+# WASM player (nostalgist) handles emulation client-side. The Rust
+# engine binary is still built and started so a future stream-mode
+# deployment can drop cores into /usr/lib/libretro and have them
+# picked up automatically.
+RUN apt-get update \
   && apt-get install -y --no-install-recommends \
        ca-certificates \
        git \
        tini \
-       libretro-snes9x \
-       libretro-genesis-plus-gx \
   && rm -rf /var/lib/apt/lists/*
 
 COPY package.json bun.lock ./
