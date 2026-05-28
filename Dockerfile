@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /
 COPY package.json bun.lock ./
 COPY packages ./packages
 COPY apps/web ./apps/web
-RUN bun install --frozen-lockfile
+RUN bun install
 RUN cd apps/web && bun run build
 
 # Stage 3: runtime.
@@ -62,7 +62,7 @@ COPY apps/web/package.json ./apps/web/package.json
 COPY --from=web /src/apps/web/dist ./web
 COPY --from=engine /usr/local/bin/outvie-engine /usr/local/bin/outvie-engine
 
-RUN bun install --frozen-lockfile --production
+RUN bun install --production
 RUN chmod +x /entrypoint.sh
 
 ENV PORT=4290 \
