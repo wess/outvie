@@ -5,6 +5,7 @@ import { app } from "../state.ts"
 import { gamesRoutes } from "./games.ts"
 import { healthRoutes } from "./health.ts"
 import { romRoutes } from "./rom.ts"
+import { savesRoutes } from "./saves.ts"
 import { streamRoutes } from "./stream.ts"
 
 export const buildRoutes = async (): Promise<Route[]> => {
@@ -27,6 +28,9 @@ export const buildRoutes = async (): Promise<Route[]> => {
     ...healthRoutes,
     ...authRoutes(cfg.secret),
     ...ssoRoutes,
+    // Saves routes are registered BEFORE gamesRoutes because gamesRoutes
+    // owns `/api/games/:id` (which would otherwise gobble `/api/games/:id/saves`).
+    ...savesRoutes(cfg.secret),
     ...gamesRoutes(cfg.secret),
     ...romRoutes(cfg.secret),
     ...streamRoutes(cfg.secret),

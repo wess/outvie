@@ -1,9 +1,11 @@
-import { Badge, Box, Center, Loader, Stack, Text } from "@mantine/core"
+import { Badge, Box, Center, Group, Loader, Stack, Text } from "@mantine/core"
+import { IconDeviceGamepad } from "@tabler/icons-react"
 import { useEffect, useRef, useState } from "react"
 import type { Game } from "@outvie/core"
 import { romUrl } from "../api/index.ts"
 import { mountLocalPlayer, mountRemotePlayer, type Player } from "../emulator/index.ts"
 import { usePlayer } from "./context.tsx"
+import { shortGamepadName, useGamepad } from "./gamepad.ts"
 
 type Mode = "local" | "stream"
 
@@ -12,6 +14,7 @@ type Props = { game: Game; mode: Mode; onModeChange: (mode: Mode) => void }
 export const Stage = ({ game, mode, onModeChange }: Props) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const playerRef = useRef<Player | null>(null)
+  const gamepad = useGamepad()
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const { setPlayer } = usePlayer()
@@ -66,19 +69,28 @@ export const Stage = ({ game, mode, onModeChange }: Props) => {
 
   return (
     <Box style={{ position: "relative", height: "100%", overflow: "hidden" }} className="outvie-player">
-      <canvas ref={canvasRef} style={{ width: "100%", height: "100%", display: "block" }} />
-      <Badge
-        pos="absolute"
-        top={12}
-        left={12}
-        size="xs"
-        radius="sm"
-        variant="light"
-        color={mode === "stream" ? "violet" : "gray"}
-      >
-        <span className="outvie-status-dot" style={{ background: mode === "stream" ? "#9b87f5" : "#888" }} />
-        &nbsp;{mode === "stream" ? "Streaming · server" : "Local · browser"}
-      </Badge>
+      {/* No inline width/height — global.css clamps with max-width /
+          max-height + object-fit: contain so the picture stays inside
+          the cell the play page allocates on any monitor size. */}
+      <canvas ref={canvasRef} />
+      <Group pos="absolute" top={12} left={12} gap={6} wrap="nowrap">
+        <Badge size="xs" radius="sm" variant="light" color={mode === "stream" ? "violet" : "gray"}>
+          <span className="outvie-status-dot" style={{ background: mode === "stream" ? "#9b87f5" : "#888" }} />
+          &nbsp;{mode === "stream" ? "Streaming · server" : "Local · browser"}
+        </Badge>
+        {gamepad && (
+          <Badge
+            size="xs"
+            radius="sm"
+            variant="light"
+            color="teal"
+            leftSection={<IconDeviceGamepad size={10} />}
+            title={gamepad}
+          >
+            {shortGamepadName(gamepad)}
+          </Badge>
+        )}
+      </Group>
       {loading ? (
         <Center pos="absolute" inset={0}>
           <Stack align="center" gap="xs">

@@ -1,9 +1,22 @@
-import { Box, Button, Center, Container, Group, Loader, SegmentedControl, Stack, Text, Title } from "@mantine/core"
+import {
+  ActionIcon,
+  Box,
+  Button,
+  Center,
+  Container,
+  Group,
+  Loader,
+  SegmentedControl,
+  Stack,
+  Text,
+  TextInput,
+  Title,
+} from "@mantine/core"
 import { useQuery } from "@tanstack/react-query"
-import { IconCloudUpload, IconPlus } from "@tabler/icons-react"
-import { useEffect, useState } from "react"
+import { IconCloudUpload, IconPlus, IconSearch, IconX } from "@tabler/icons-react"
+import { useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "react-router-dom"
-import type { System } from "@outvie/core"
+import type { Game, System } from "@outvie/core"
 import { listGames } from "../api/index.ts"
 import { Empty } from "./empty.tsx"
 import { Grid } from "./grid.tsx"
@@ -11,8 +24,21 @@ import { UploadModal } from "./upload.tsx"
 
 type Filter = "all" | System
 
+// Match `query` against `title` as a case-insensitive substring. Splits
+// the query on whitespace so "super mario" matches "Super Mario Bros 3"
+// and also "Mario, Super Bros" — both terms must appear, order-free.
+const matchesTitle = (title: string, query: string): boolean => {
+  if (!query) return true
+  const haystack = title.toLowerCase()
+  for (const part of query.toLowerCase().split(/\s+/)) {
+    if (part && !haystack.includes(part)) return false
+  }
+  return true
+}
+
 export const Library = () => {
   const [filter, setFilter] = useState<Filter>("all")
+  const [search, setSearch] = useState("")
   const [uploadOpen, setUploadOpen] = useState(false)
   const [params, setParams] = useSearchParams()
 
@@ -20,6 +46,12 @@ export const Library = () => {
     queryKey: ["games", filter],
     queryFn: () => listGames(filter === "all" ? undefined : filter),
   })
+
+  const filtered: Game[] = useMemo(() => {
+    const data = games.data ?? []
+    if (!search.trim()) return data
+    return data.filter((g) => matchesTitle(g.title, search.trim()))
+  }, [games.data, search])
 
   useEffect(() => {
     if (params.get("upload") === "1") {
@@ -49,6 +81,30 @@ export const Library = () => {
             Pick a game
           </Title>
         </Stack>
+        <TextInput
+          value={search}
+          onChange={(e) => setSearch(e.currentTarget.value)}
+          placeholder="Search the library…"
+          size="md"
+          radius="md"
+          leftSection={<IconSearch size={16} />}
+          rightSection={
+            search ? (
+              <ActionIcon
+                variant="subtle"
+                color="gray"
+                onClick={() => setSearch("")}
+                aria-label="clear search"
+              >
+                <IconX size={14} />
+              </ActionIcon>
+            ) : null
+          }
+          aria-label="search games"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck={false}
+        />
         <Group
           gap="sm"
           wrap="wrap"
@@ -117,8 +173,24 @@ export const Library = () => {
                 : `No ${filter === "nes" ? "NES" : filter === "snes" ? "SNES" : "Genesis"} games yet`
             }
           />
+        ) : filtered.length === 0 ? (
+          <Center mih={300}>
+            <Stack align="center" gap="xs">
+              <Text c="dimmed">No games match “{search}”.</Text>
+              <Button variant="subtle" size="xs" onClick={() => setSearch("")}>
+                Clear search
+              </Button>
+            </Stack>
+          </Center>
         ) : (
-          <Grid games={games.data} />
+          <>
+            {search && (
+              <Text size="xs" c="dimmed" mb="xs">
+                {filtered.length} of {games.data.length} games
+              </Text>
+            )}
+            <Grid games={filtered} />
+          </>
         )}
       </Box>
 

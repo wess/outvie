@@ -44,11 +44,18 @@ export const Play = () => {
         style={{
           height: "100%",
           display: "grid",
-          gridTemplateRows: "1fr auto",
+          gridTemplateRows: "minmax(0, 1fr) auto",
           background: "#000",
+          overflow: "hidden",
         }}
       >
-        <Stage game={q.data} mode={mode} onModeChange={setMode} />
+        {/* minmax(0, 1fr) is critical — without it the grid child
+            defaults to min-height: auto and grows past the viewport,
+            pushing the HUD off the bottom on large monitors. The
+            min-height: 0 below is belt-and-braces for older Safari. */}
+        <Box style={{ minHeight: 0, overflow: "hidden", height: "100%" }}>
+          <Stage game={q.data} mode={mode} onModeChange={setMode} />
+        </Box>
         <Hud game={q.data} mode={mode} onModeChange={setMode} />
       </Box>
     </PlayerProvider>

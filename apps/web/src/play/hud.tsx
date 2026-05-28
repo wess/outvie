@@ -2,16 +2,17 @@ import { ActionIcon, Badge, Group, SegmentedControl, Text, Tooltip } from "@mant
 import { notifications } from "@mantine/notifications"
 import {
   IconArrowBackUp,
-  IconDeviceFloppy,
+  IconCloudDownload,
+  IconCloudUpload,
   IconKeyboard,
   IconPlayerPause,
   IconPlayerPlay,
-  IconUpload,
 } from "@tabler/icons-react"
-import { useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import type { Game } from "@outvie/core"
 import { systemMeta } from "@outvie/core"
+import { downloadSave, type GameSave, listSaves, uploadSave } from "../api/index.ts"
 import { systemColor } from "../theme/system.ts"
 import { usePlayer } from "./context.tsx"
 
@@ -19,13 +20,33 @@ type Mode = "local" | "stream"
 type Props = { game: Game; mode: Mode; onModeChange: (m: Mode) => void }
 
 const STATE_MIME = "application/octet-stream"
+const QUICK_SLOT = 0 // single quick-save slot; UI for multiple slots is future work
 
 export const Hud = ({ game, mode, onModeChange }: Props) => {
   const { player } = usePlayer()
   const [paused, setPaused] = useState(false)
-  const loadInputRef = useRef<HTMLInputElement>(null)
+  const [quickSave, setQuickSave] = useState<GameSave | null>(null)
+  const [busy, setBusy] = useState(false)
   const meta = systemMeta[game.system]
   const streamAvailable = true
+
+  // Pull the existing quick-save metadata on mount so Load isn't enabled
+  // until we know there's something to load.
+  useEffect(() => {
+    let cancelled = false
+    listSaves(game.id)
+      .then((saves) => {
+        if (cancelled) return
+        const slot = saves.find((s) => s.slot === QUICK_SLOT) ?? null
+        setQuickSave(slot)
+      })
+      .catch(() => {
+        /* server unreachable — Save is still enabled, Load will just 404 */
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [game.id])
 
   const togglePause = () => {
     if (!player) return
@@ -40,32 +61,51 @@ export const Hud = ({ game, mode, onModeChange }: Props) => {
 
   const saveState = async () => {
     if (!player) return
+    if (mode === "stream") {
+      notifications.show({ color: "yellow", message: "Save states are local-only — switch to Local mode" })
+      return
+    }
+    setBusy(true)
     try {
       const blob = await player.saveState()
       if (!blob) {
-        notifications.show({ color: "yellow", message: "Save states are local-only" })
+        notifications.show({ color: "yellow", message: "Player didn't return a save state" })
         return
       }
       const typed = blob.type ? blob : new Blob([blob], { type: STATE_MIME })
-      const url = URL.createObjectURL(typed)
-      const a = document.createElement("a")
-      a.href = url
-      a.download = `${game.title.replace(/[^a-z0-9]+/gi, "_")}.state`
-      a.click()
-      URL.revokeObjectURL(url)
-      notifications.show({ color: "violet", message: "Saved state to disk" })
+      const result = await uploadSave(game.id, QUICK_SLOT, typed)
+      setQuickSave(result)
+      notifications.show({ color: "violet", message: `Saved to your library (${(result.size / 1024).toFixed(0)} KB)` })
     } catch (err) {
       notifications.show({ color: "red", message: `Save failed: ${err}` })
+    } finally {
+      setBusy(false)
     }
   }
 
-  const loadState = async (file: File) => {
+  const loadState = async () => {
     if (!player) return
+    if (mode === "stream") {
+      notifications.show({ color: "yellow", message: "Save states are local-only — switch to Local mode" })
+      return
+    }
+    setBusy(true)
     try {
+      const blob = await downloadSave(game.id, QUICK_SLOT)
+      if (!blob) {
+        notifications.show({ color: "yellow", message: "No save yet for this game" })
+        return
+      }
+      // Pass a File so player.loadState (which accepts Blob | File) gets
+      // a content-type-stable input across both nostalgist and the
+      // remote player.
+      const file = new File([blob], `${game.id}-${QUICK_SLOT}.state`, { type: STATE_MIME })
       await player.loadState(file)
-      notifications.show({ color: "violet", message: "Loaded state" })
+      notifications.show({ color: "violet", message: "Loaded your save" })
     } catch (err) {
       notifications.show({ color: "red", message: `Load failed: ${err}` })
+    } finally {
+      setBusy(false)
     }
   }
 
@@ -121,28 +161,40 @@ export const Hud = ({ game, mode, onModeChange }: Props) => {
             {paused ? <IconPlayerPlay size={18} /> : <IconPlayerPause size={18} />}
           </ActionIcon>
         </Tooltip>
-        <Tooltip label={mode === "stream" ? "Save states only available locally" : "Save state"} withArrow>
+        <Tooltip
+          label={mode === "stream" ? "Save states only available locally" : "Save to your library"}
+          withArrow
+        >
           <ActionIcon
             variant="subtle"
             color="gray"
             onClick={saveState}
-            disabled={!player || mode === "stream"}
+            disabled={!player || mode === "stream" || busy}
             aria-label="save state"
             visibleFrom="sm"
           >
-            <IconDeviceFloppy size={18} />
+            <IconCloudUpload size={18} />
           </ActionIcon>
         </Tooltip>
-        <Tooltip label={mode === "stream" ? "Load states only available locally" : "Load state"} withArrow>
+        <Tooltip
+          label={
+            mode === "stream"
+              ? "Save states only available locally"
+              : quickSave
+                ? `Load your save (${new Date(quickSave.updated_at).toLocaleString()})`
+                : "No save yet"
+          }
+          withArrow
+        >
           <ActionIcon
             variant="subtle"
             color="gray"
-            onClick={() => loadInputRef.current?.click()}
-            disabled={!player || mode === "stream"}
+            onClick={loadState}
+            disabled={!player || mode === "stream" || busy || !quickSave}
             aria-label="load state"
             visibleFrom="sm"
           >
-            <IconUpload size={18} />
+            <IconCloudDownload size={18} />
           </ActionIcon>
         </Tooltip>
         <Tooltip
@@ -156,18 +208,6 @@ export const Hud = ({ game, mode, onModeChange }: Props) => {
           </ActionIcon>
         </Tooltip>
       </Group>
-
-      <input
-        ref={loadInputRef}
-        type="file"
-        hidden
-        accept=".state,application/octet-stream"
-        onChange={(e) => {
-          const file = e.target.files?.[0]
-          if (file) void loadState(file)
-          if (loadInputRef.current) loadInputRef.current.value = ""
-        }}
-      />
     </Group>
   )
 }

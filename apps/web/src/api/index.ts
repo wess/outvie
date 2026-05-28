@@ -76,6 +76,58 @@ export const destroyStreamSession = async (id: string): Promise<void> => {
   }).catch(() => {})
 }
 
+// ── Per-user save states ───────────────────────────────────────────
+
+export type GameSave = {
+  id: number
+  game_id: string
+  slot: number
+  size: number
+  label: string | null
+  created_at: string
+  updated_at: string
+}
+
+export const listSaves = async (gameId: string): Promise<GameSave[]> => {
+  const res = await fetch(`${base}/api/games/${gameId}/saves`, { headers: authHeaders() })
+  if (!res.ok) throw new Error(`list saves failed: ${res.status}`)
+  const body = (await res.json()) as { saves: GameSave[] }
+  return body.saves
+}
+
+export const uploadSave = async (
+  gameId: string,
+  slot: number,
+  blob: Blob,
+  label?: string,
+): Promise<GameSave> => {
+  const qs = label ? `?label=${encodeURIComponent(label)}` : ""
+  const res = await fetch(`${base}/api/games/${gameId}/saves/${slot}${qs}`, {
+    method: "POST",
+    headers: authHeaders({ "content-type": "application/octet-stream" }),
+    body: blob,
+  })
+  if (!res.ok) {
+    const text = await res.text().catch(() => "")
+    throw new Error(`save failed (${res.status}): ${text}`)
+  }
+  return (await res.json()) as GameSave
+}
+
+export const downloadSave = async (gameId: string, slot: number): Promise<Blob | null> => {
+  const res = await fetch(`${base}/api/games/${gameId}/saves/${slot}`, { headers: authHeaders() })
+  if (res.status === 404) return null
+  if (!res.ok) throw new Error(`load failed: ${res.status}`)
+  return await res.blob()
+}
+
+export const deleteSave = async (gameId: string, slot: number): Promise<void> => {
+  await fetch(`${base}/api/games/${gameId}/saves/${slot}`, {
+    method: "DELETE",
+    headers: authHeaders(),
+  }).catch(() => {})
+}
+
 export type UploadProgress = {
   filename: string
   loaded: number
