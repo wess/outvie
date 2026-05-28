@@ -25,9 +25,12 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
 FROM oven/bun:1 AS web
 WORKDIR /src
 RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
-COPY package.json bun.lock ./
+COPY package.json bun.lock tsconfig.json ./
 COPY packages ./packages
 COPY apps/web ./apps/web
+# apps/server's package.json is needed for workspace resolution since
+# the root package.json includes "apps/*" in workspaces.
+COPY apps/server/package.json ./apps/server/package.json
 RUN bun install
 RUN cd apps/web && bun run build
 
@@ -52,7 +55,7 @@ RUN apt-get update \
        tini \
   && rm -rf /var/lib/apt/lists/*
 
-COPY package.json bun.lock ./
+COPY package.json bun.lock tsconfig.json ./
 COPY packages ./packages
 COPY apps/server ./apps/server
 COPY migrations ./migrations
