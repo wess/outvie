@@ -1,7 +1,31 @@
 import { extname } from "node:path"
-import { get, pipe, putHeader, type Conn } from "@atlas/server"
+import { token } from "@atlas/auth"
+import { assign, type Conn, get, halt, pipe, pipeline, putHeader } from "@atlas/server"
 import { romPath } from "@outvie/library"
+import { type AuthClaims, authId } from "../auth/index.ts"
 import { app } from "../state.ts"
+
+// ROM-specific guard. Accepts either an `Authorization: Bearer …` header
+// (the SPA's fetch path) or a `?token=…` query parameter (the WASM
+// emulator path, which loads via <source src="…"> and can't set headers).
+const romGuard = (secret: string) =>
+  pipe(async (c: Conn) => {
+    const url = new URL(c.request.url)
+    const authHeader = c.headers.get("authorization")
+    const bearer = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null
+    const t = bearer ?? url.searchParams.get("token")
+    if (!t) {
+      return halt(c, 401, {
+        error: "Missing token. Pass Authorization: Bearer <jwt> or ?token=<jwt>.",
+      })
+    }
+    try {
+      const claims = (await token.verify(t, secret)) as AuthClaims
+      return assign(c, { auth: claims })
+    } catch {
+      return halt(c, 401, { error: "Invalid or expired token." })
+    }
+  })
 
 const setHeaders = (c: Conn, entries: Record<string, string>): Conn => {
   let next = c
@@ -15,19 +39,29 @@ const sendStream = (c: Conn, status: number, stream: ReadableStream<Uint8Array>)
   body: stream,
 })
 
-export const romRoutes = [
+export const romRoutes = (secret: string) => [
   get(
     "/api/games/:id/rom",
-    pipe(async (c) => {
+    pipeline(romGuard(secret))(async (c) => {
+      const ownerId = authId(c)
       const id = c.params.id
-      if (!id) return { ...c, status: 400, body: { error: "id required" } }
-      const game = app().store.get(id)
-      if (!game) return { ...c, status: 404, body: { error: "not found" } }
+      if (!id) return halt(c, 400, { error: "id required" })
+
+      const owner = (await app().db.one({
+        text: "SELECT owner_id FROM games WHERE id = $1",
+        values: [id],
+      })) as { owner_id: number | null } | null
+      if (owner && owner.owner_id !== null && owner.owner_id !== ownerId) {
+        return halt(c, 404, { error: "not found" })
+      }
+
+      const game = await app().store.get(id)
+      if (!game) return halt(c, 404, { error: "not found" })
 
       const ext = extname(game.filename).toLowerCase() || ".bin"
       const path = romPath(app().cfg.dataDir, game.system, game.id, ext)
       const file = Bun.file(path)
-      if (!(await file.exists())) return { ...c, status: 410, body: { error: "rom missing" } }
+      if (!(await file.exists())) return halt(c, 410, { error: "rom missing" })
 
       const size = file.size
       const range = c.headers.get("range")

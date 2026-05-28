@@ -1,11 +1,14 @@
 import { mkdir, readdir, stat } from "node:fs/promises"
-import { extname, join } from "node:path"
-import { ingestRom, openStore, paths } from "@outvie/library"
+import { extname, join, resolve } from "node:path"
+import { connect } from "@atlas/db"
+import { migrate } from "@atlas/migrate"
+import { createStore, ingestRom, paths } from "@outvie/library"
 import { systemFromExtension } from "@outvie/core"
 
 const source = process.argv[2] ?? `${process.env.HOME}/Downloads/roms`
 const dataDir = process.env.DATA_DIR ?? "./data"
-const dbPath = process.env.DATABASE_PATH ?? "./outvie.db"
+const dbUrl = process.env.DATABASE_URL ?? "postgres://postgres:postgres@127.0.0.1:5432/outvie"
+const ownerId = process.env.OWNER_ID ? Number(process.env.OWNER_ID) : null
 
 const walk = async function* (root: string): AsyncGenerator<string> {
   const entries = await readdir(root, { withFileTypes: true }).catch(() => [])
@@ -34,7 +37,9 @@ const main = async () => {
   await mkdir(p.saves, { recursive: true })
   await mkdir(p.states, { recursive: true })
 
-  const store = openStore(dbPath)
+  const db = connect({ driver: "postgres", url: dbUrl })
+  await migrate.up(db, resolve(import.meta.dir, "..", "migrations"))
+  const store = createStore(db)
 
   const files: string[] = []
   for await (const f of walk(source)) files.push(f)
@@ -70,6 +75,7 @@ const main = async () => {
         stream: file.stream(),
         dataRoot: dataDir,
         store,
+        ownerId,
       })
       if (result.ok) {
         if (result.deduped) deduped++
@@ -101,7 +107,6 @@ const main = async () => {
     console.log("reasons:")
     for (const [r, n] of reasons) console.log(`  ${r}: ${n}`)
   }
-  store.close()
 }
 
 await main()

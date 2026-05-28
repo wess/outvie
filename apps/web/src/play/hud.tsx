@@ -72,29 +72,39 @@ export const Hud = ({ game, mode, onModeChange }: Props) => {
   return (
     <Group
       justify="space-between"
-      px="md"
+      px={{ base: "xs", sm: "md" }}
       py="xs"
+      wrap="nowrap"
+      gap="xs"
       style={{
         background: "rgba(11,12,16,0.85)",
         borderTop: "1px solid rgba(255,255,255,0.06)",
         backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
+        paddingBottom: "calc(var(--mantine-spacing-xs) + env(safe-area-inset-bottom))",
       }}
     >
-      <Group gap="sm" wrap="nowrap">
+      <Group gap="xs" wrap="nowrap" style={{ minWidth: 0, flex: "1 1 auto" }}>
         <Tooltip label="Back to library" withArrow>
           <ActionIcon component={Link} to="/" variant="subtle" color="gray" aria-label="back">
             <IconArrowBackUp size={18} />
           </ActionIcon>
         </Tooltip>
-        <Badge size="xs" variant="light" color={game.system === "nes" ? "red" : "violet"} radius="sm">
+        <Badge
+          size="xs"
+          variant="light"
+          color={game.system === "nes" ? "red" : "violet"}
+          radius="sm"
+          visibleFrom="xs"
+        >
           {meta.shortName}
         </Badge>
-        <Text size="sm" fw={600} lineClamp={1} maw={360}>
+        <Text size="sm" fw={600} lineClamp={1} style={{ minWidth: 0 }}>
           {game.title}
         </Text>
       </Group>
 
-      <Group gap="xs">
+      <Group gap={4} wrap="nowrap">
         <SegmentedControl
           size="xs"
           value={mode}
@@ -104,6 +114,7 @@ export const Hud = ({ game, mode, onModeChange }: Props) => {
             { label: "Local", value: "local" },
           ]}
           color="violet"
+          visibleFrom="sm"
         />
         <Tooltip label={paused ? "Resume" : "Pause"} withArrow>
           <ActionIcon variant="subtle" color="gray" onClick={togglePause} disabled={!player} aria-label="pause">
@@ -117,6 +128,7 @@ export const Hud = ({ game, mode, onModeChange }: Props) => {
             onClick={saveState}
             disabled={!player || mode === "stream"}
             aria-label="save state"
+            visibleFrom="sm"
           >
             <IconDeviceFloppy size={18} />
           </ActionIcon>
@@ -128,6 +140,7 @@ export const Hud = ({ game, mode, onModeChange }: Props) => {
             onClick={() => loadInputRef.current?.click()}
             disabled={!player || mode === "stream"}
             aria-label="load state"
+            visibleFrom="sm"
           >
             <IconUpload size={18} />
           </ActionIcon>
@@ -138,7 +151,7 @@ export const Hud = ({ game, mode, onModeChange }: Props) => {
           multiline
           w={280}
         >
-          <ActionIcon variant="subtle" color="gray" aria-label="controls">
+          <ActionIcon variant="subtle" color="gray" aria-label="controls" visibleFrom="sm">
             <IconKeyboard size={18} />
           </ActionIcon>
         </Tooltip>

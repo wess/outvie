@@ -86,6 +86,7 @@ a {
 }
 
 .outvie-player {
+  position: relative;
   width: 100%;
   height: 100%;
   background: #000;
@@ -134,4 +135,61 @@ a {
   border-radius: 50%;
   display: inline-block;
   animation: outviePulse 1.6s ease-in-out infinite;
+}
+
+/* ── Mobile + touch ── */
+
+/* Disable hover lift on touch devices — it gets sticky on tap. */
+@media (hover: none) {
+  .outvie-card:hover {
+    transform: none;
+    border-color: rgba(255, 255, 255, 0.06);
+    box-shadow: none;
+  }
+}
+
+/* Make every interactive target at least 44×44 (Apple HIG) so taps
+   register without accidental neighbour hits. */
+@media (max-width: 600px) {
+  button,
+  [role="button"],
+  .mantine-ActionIcon-root,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mantine-ActionIcon-root {
+    min-width: 40px;
+    min-height: 40px;
+  }
+}
+
+/* On portrait phones in the player, hint that landscape is way better. */
+@media (max-width: 600px) and (orientation: portrait) {
+  .outvie-player::after {
+    content: "Rotate to landscape for a better view";
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.45);
+    background: rgba(0, 0, 0, 0.6);
+    padding: 4px 10px;
+    border-radius: 999px;
+    pointer-events: none;
+  }
+}
+
+/* Bigger dropzone on phones so it's an obvious tap target. */
+@media (max-width: 600px) {
+  .outvie-dropzone {
+    padding: 36px 16px;
+  }
+}
+
+/* Tighter card padding on phones. */
+@media (max-width: 600px) {
+  .outvie-card {
+    border-radius: 14px;
+  }
 }

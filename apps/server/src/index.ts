@@ -14,7 +14,7 @@ const preflight = options("/*", async (c) => {
   return { ...after, status: 204 }
 })
 
-const apiHandler = router(preflight, ...buildRoutes())
+const apiHandler = router(preflight, ...(await buildRoutes()))
 const spaHandler = cfg.webRoot ? spa(cfg.webRoot) : null
 
 const fetchHandler = async (req: Request, server: any): Promise<Response | undefined> => {
@@ -25,12 +25,22 @@ const fetchHandler = async (req: Request, server: any): Promise<Response | undef
     return new Response("Unsupported websocket path", { status: 404 })
   }
 
-  if (url.pathname === "/api" || url.pathname.startsWith("/api/")) {
+  // /api/* and the SSO routes (/auth/sso/login, /auth/sso/callback,
+  // /auth/sso/logout, /auth/sso/backchannel-logout) both go through the
+  // atlas router. SPA serves everything else.
+  if (
+    url.pathname === "/api" ||
+    url.pathname.startsWith("/api/") ||
+    url.pathname.startsWith("/auth/sso/")
+  ) {
     const res = await apiHandler(req)
     return withCors(res, cfg.webOrigin)
   }
   if (spaHandler) return spaHandler(req)
-  return new Response("Not Found", { status: 404 })
+  return new Response("Not Found", {
+    status: 404,
+    headers: { "content-type": "text/plain;charset=utf-8" },
+  })
 }
 
 Bun.serve({

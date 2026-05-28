@@ -30,17 +30,31 @@ export const Library = () => {
   }, [params, setParams])
 
   return (
-    <Container size="xl" py="md">
-      <Group justify="space-between" align="end" mb="xl">
+    <Container size="xl" py={{ base: "sm", sm: "md" }} px={{ base: "sm", sm: "md" }}>
+      <Stack gap="md" mb={{ base: "md", sm: "xl" }}>
         <Stack gap={4}>
-          <Text size="xs" c="dimmed" tt="uppercase" fw={600} style={{ letterSpacing: "0.14em" }}>
+          <Text
+            size="xs"
+            c="dimmed"
+            tt="uppercase"
+            fw={600}
+            style={{ letterSpacing: "0.14em" }}
+          >
             Your Library
           </Text>
-          <Title order={1} style={{ fontSize: 36, letterSpacing: "-0.025em" }}>
+          <Title
+            order={1}
+            style={{ fontSize: "clamp(26px, 6vw, 36px)", letterSpacing: "-0.025em" }}
+          >
             Pick a game
           </Title>
         </Stack>
-        <Group gap="sm">
+        <Group
+          gap="sm"
+          wrap="wrap"
+          justify={{ base: "flex-start", sm: "flex-end" } as never}
+          style={{ rowGap: 8 }}
+        >
           <SegmentedControl
             value={filter}
             onChange={(v) => setFilter(v as Filter)}
@@ -52,6 +66,8 @@ export const Library = () => {
             ]}
             size="sm"
             color="violet"
+            style={{ flex: "1 1 auto", minWidth: 0 }}
+            fullWidth
           />
           <Button
             leftSection={<IconPlus size={16} />}
@@ -59,11 +75,24 @@ export const Library = () => {
             gradient={{ from: "violet", to: "grape", deg: 130 }}
             onClick={() => setUploadOpen(true)}
             radius="md"
+            visibleFrom="xs"
+          >
+            Add games
+          </Button>
+          <Button
+            leftSection={<IconPlus size={16} />}
+            variant="gradient"
+            gradient={{ from: "violet", to: "grape", deg: 130 }}
+            onClick={() => setUploadOpen(true)}
+            radius="md"
+            size="sm"
+            hiddenFrom="xs"
+            fullWidth
           >
             Add games
           </Button>
         </Group>
-      </Group>
+      </Stack>
 
       <Box mih={300}>
         {games.isLoading ? (

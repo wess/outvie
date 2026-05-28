@@ -1,4 +1,5 @@
 import type { Game, GameUploadResult, System } from "@outvie/core"
+import { authHeaders, getToken } from "./auth.ts"
 
 const base = ""
 
@@ -12,15 +13,30 @@ const jsonOrThrow = async <T>(res: Response): Promise<T> => {
 
 export const listGames = async (system?: System): Promise<Game[]> => {
   const url = system ? `${base}/api/games?system=${system}` : `${base}/api/games`
-  return jsonOrThrow<Game[]>(await fetch(url))
+  return jsonOrThrow<Game[]>(await fetch(url, { headers: authHeaders() }))
 }
 
-export const getGame = async (id: string): Promise<Game> => jsonOrThrow<Game>(await fetch(`${base}/api/games/${id}`))
+export const getGame = async (id: string): Promise<Game> =>
+  jsonOrThrow<Game>(await fetch(`${base}/api/games/${id}`, { headers: authHeaders() }))
 
-export const romUrl = (id: string): string => `${base}/api/games/${id}/rom`
+// ROM bytes need the JWT too. Browsers can't send Authorization headers
+// when fetching via `<source src="…">` or `<img src="…">`, so for those
+// cases we append the token on the URL. Used by the WASM emulator's
+// fetch() (header path) and by libretro's HTML <video> fallback (query
+// path). Server accepts either; query token is short-lived in practice
+// since it lives only in memory and the URL never persists.
+export const romUrl = (id: string): string => {
+  const t = getToken()
+  return t
+    ? `${base}/api/games/${id}/rom?token=${encodeURIComponent(t)}`
+    : `${base}/api/games/${id}/rom`
+}
 
 export const deleteGame = async (id: string): Promise<void> => {
-  const res = await fetch(`${base}/api/games/${id}`, { method: "DELETE" })
+  const res = await fetch(`${base}/api/games/${id}`, {
+    method: "DELETE",
+    headers: authHeaders(),
+  })
   if (!res.ok && res.status !== 204) throw new Error(`delete failed: ${res.status}`)
 }
 
@@ -45,7 +61,7 @@ export type StreamSessionError = {
 export const createStreamSession = async (gameId: string): Promise<StreamSession | StreamSessionError> => {
   const res = await fetch(`${base}/api/stream/sessions`, {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: authHeaders({ "content-type": "application/json" }),
     body: JSON.stringify({ gameId }),
   })
   const parsed = await res.json().catch(() => ({}) as unknown)
@@ -54,7 +70,10 @@ export const createStreamSession = async (gameId: string): Promise<StreamSession
 }
 
 export const destroyStreamSession = async (id: string): Promise<void> => {
-  await fetch(`${base}/api/stream/sessions/${id}`, { method: "DELETE" }).catch(() => {})
+  await fetch(`${base}/api/stream/sessions/${id}`, {
+    method: "DELETE",
+    headers: authHeaders(),
+  }).catch(() => {})
 }
 
 export type UploadProgress = {
@@ -74,6 +93,8 @@ export const uploadRom = (
     xhr.open("POST", `${base}/api/games`, true)
     xhr.setRequestHeader("Content-Type", "application/octet-stream")
     xhr.setRequestHeader("X-Filename", encodeURIComponent(file.name))
+    const t = getToken()
+    if (t) xhr.setRequestHeader("Authorization", `Bearer ${t}`)
     xhr.timeout = 0
 
     xhr.upload.onprogress = (e) => {

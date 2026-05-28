@@ -32,9 +32,16 @@ export type IngestInput = {
   stream: ReadableStream<Uint8Array>
   dataRoot: string
   store: Store
+  ownerId?: number | null
 }
 
-export const ingestRom = async ({ filename, stream, dataRoot, store }: IngestInput): Promise<IngestResult> => {
+export const ingestRom = async ({
+  filename,
+  stream,
+  dataRoot,
+  store,
+  ownerId = null,
+}: IngestInput): Promise<IngestResult> => {
   const tmpDir = join(paths(dataRoot).roms, "tmp")
   await mkdir(tmpDir, { recursive: true })
 
@@ -78,7 +85,7 @@ export const ingestRom = async ({ filename, stream, dataRoot, store }: IngestInp
   }
 
   const sha1 = toHex(hasher.digest().buffer as ArrayBuffer)
-  const existing = store.getBySha1(sha1)
+  const existing = await store.getBySha1(sha1)
   if (existing) {
     await unlink(tmpPath).catch(() => {})
     return { ok: true, game: existing, deduped: true }
@@ -99,6 +106,6 @@ export const ingestRom = async ({ filename, stream, dataRoot, store }: IngestInp
     sha1,
     addedAt: new Date().toISOString(),
   }
-  store.insert(game)
+  await store.insert(game, ownerId)
   return { ok: true, game, deduped: false }
 }

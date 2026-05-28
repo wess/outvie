@@ -1,7 +1,8 @@
 import { mkdir } from "node:fs/promises"
 import { dirname, extname, resolve } from "node:path"
-import { del, json, pipe, post } from "@atlas/server"
+import { del, halt, json, pipeline, post } from "@atlas/server"
 import { romPath, savePath } from "@outvie/library"
+import { authId, guard } from "../auth/index.ts"
 import { app } from "../state.ts"
 
 type CreateBody = { gameId?: string }
@@ -22,20 +23,29 @@ const fetchEngine = async (cfg: { engineUrl: string }, path: string, init?: Requ
   return { status: res.status, body: text }
 }
 
-export const streamRoutes = [
+export const streamRoutes = (secret: string) => [
   post(
     "/api/stream/sessions",
-    pipe(async (c) => {
-      const { store, cfg } = app()
+    pipeline(guard(secret))(async (c) => {
+      const ownerId = authId(c)
+      const { store, cfg, db } = app()
       const body = (await c.request.json().catch(() => ({}))) as CreateBody
-      if (!body.gameId) return json(c, 400, { error: "gameId required" })
+      if (!body.gameId) return halt(c, 400, { error: "gameId required" })
 
-      const game = store.get(body.gameId)
-      if (!game) return json(c, 404, { error: "game not found" })
+      const owner = (await db.one({
+        text: "SELECT owner_id FROM games WHERE id = $1",
+        values: [body.gameId],
+      })) as { owner_id: number | null } | null
+      if (owner && owner.owner_id !== null && owner.owner_id !== ownerId) {
+        return halt(c, 404, { error: "game not found" })
+      }
+
+      const game = await store.get(body.gameId)
+      if (!game) return halt(c, 404, { error: "game not found" })
 
       const ext = extname(game.filename).toLowerCase() || ".bin"
       const absoluteRomPath = resolve(romPath(cfg.dataDir, game.system, game.id, ext))
-      if (!(await Bun.file(absoluteRomPath).exists())) return json(c, 410, { error: "rom missing on disk" })
+      if (!(await Bun.file(absoluteRomPath).exists())) return halt(c, 410, { error: "rom missing on disk" })
 
       const absoluteSavePath = resolve(savePath(cfg.dataDir, game.system, game.id))
       await mkdir(dirname(absoluteSavePath), { recursive: true })
@@ -75,9 +85,9 @@ export const streamRoutes = [
 
   del(
     "/api/stream/sessions/:id",
-    pipe(async (c) => {
+    pipeline(guard(secret))(async (c) => {
       const id = c.params.id
-      if (!id) return json(c, 400, { error: "id required" })
+      if (!id) return halt(c, 400, { error: "id required" })
       const { cfg } = app()
       const engineRes = await fetchEngine(cfg, `/v1/sessions/${encodeURIComponent(id)}`, { method: "DELETE" })
       return json(c, engineRes.status === 204 ? 204 : engineRes.status, {})
