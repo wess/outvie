@@ -1,9 +1,9 @@
 import { Box, Button, Group, Modal, Progress, Stack, Text, ThemeIcon } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
-import { useQueryClient } from "@tanstack/react-query"
-import { IconCheck, IconFile, IconUpload, IconX } from "@tabler/icons-react"
-import { useEffect, useRef, useState } from "react"
 import { systemFromExtension } from "@outvie/core"
+import { IconCheck, IconFile, IconUpload, IconX } from "@tabler/icons-react"
+import { useQueryClient } from "@tanstack/react-query"
+import { useEffect, useRef, useState } from "react"
 import { uploadRom } from "../api/index.ts"
 
 type Props = { opened: boolean; onClose: () => void }
@@ -24,7 +24,8 @@ const CONCURRENCY = 3
 
 const isSupported = (f: File) => systemFromExtension(f.name) !== null
 
-const formatSize = (n: number) => (n < 1024 * 1024 ? `${(n / 1024).toFixed(0)} KB` : `${(n / 1024 / 1024).toFixed(1)} MB`)
+const formatSize = (n: number) =>
+  n < 1024 * 1024 ? `${(n / 1024).toFixed(0)} KB` : `${(n / 1024 / 1024).toFixed(1)} MB`
 
 const reasonText = (reason?: string) => {
   switch (reason) {
@@ -80,6 +81,9 @@ export const UploadModal = ({ opened, onClose }: Props) => {
     }
   }
 
+  // Drive the queue off `items` only; startUpload is recreated each render, so
+  // listing it would re-run this effect every render and re-fire in-flight uploads.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentional, see above
   useEffect(() => {
     if (inFlightRef.current.size >= CONCURRENCY) return
     const slots = CONCURRENCY - inFlightRef.current.size
@@ -90,7 +94,6 @@ export const UploadModal = ({ opened, onClose }: Props) => {
       const ok = items.length - errors
       if (ok > 0) notifications.show({ color: "violet", message: `Added ${ok} game${ok === 1 ? "" : "s"}` })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items])
 
   const addFiles = (files: File[]) => {

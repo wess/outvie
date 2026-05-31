@@ -13,7 +13,7 @@ const saveFilePath = (dataDir: string, userId: number, gameId: string, slot: num
   const user = join(root, String(userId))
   const file = join(user, `${gameId}-${slot}.state`)
   const normalized = resolve(file)
-  if (!normalized.startsWith(root + "/")) {
+  if (!normalized.startsWith(`${root}/`)) {
     throw new Error("rejected save path traversal")
   }
   return normalized

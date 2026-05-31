@@ -1,5 +1,7 @@
 import { ActionIcon, Badge, Group, SegmentedControl, Text, Tooltip } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
+import type { Game } from "@outvie/core"
+import { systemMeta } from "@outvie/core"
 import {
   IconArrowBackUp,
   IconCloudDownload,
@@ -10,10 +12,7 @@ import {
 } from "@tabler/icons-react"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import type { Game } from "@outvie/core"
-import { systemMeta } from "@outvie/core"
 import { downloadSave, type GameSave, listSaves, uploadSave } from "../api/index.ts"
-import { systemColor } from "../theme/system.ts"
 import { usePlayer } from "./context.tsx"
 
 type Mode = "local" | "stream"
@@ -130,13 +129,7 @@ export const Hud = ({ game, mode, onModeChange }: Props) => {
             <IconArrowBackUp size={18} />
           </ActionIcon>
         </Tooltip>
-        <Badge
-          size="xs"
-          variant="light"
-          color={game.system === "nes" ? "red" : "violet"}
-          radius="sm"
-          visibleFrom="xs"
-        >
+        <Badge size="xs" variant="light" color={game.system === "nes" ? "red" : "violet"} radius="sm" visibleFrom="xs">
           {meta.shortName}
         </Badge>
         <Text size="sm" fw={600} lineClamp={1} style={{ minWidth: 0 }}>
@@ -161,10 +154,7 @@ export const Hud = ({ game, mode, onModeChange }: Props) => {
             {paused ? <IconPlayerPlay size={18} /> : <IconPlayerPause size={18} />}
           </ActionIcon>
         </Tooltip>
-        <Tooltip
-          label={mode === "stream" ? "Save states only available locally" : "Save to your library"}
-          withArrow
-        >
+        <Tooltip label={mode === "stream" ? "Save states only available locally" : "Save to your library"} withArrow>
           <ActionIcon
             variant="subtle"
             color="gray"

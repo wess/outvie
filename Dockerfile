@@ -82,7 +82,9 @@ ENV PORT=4290 \
 EXPOSE 4290
 VOLUME ["/data"]
 
+# bun is the only HTTP-capable tool in the slim runtime image (no wget/curl),
+# so probe with it directly.
 HEALTHCHECK --interval=30s --timeout=3s --start-period=15s --retries=3 \
-  CMD wget -qO- http://127.0.0.1:4290/api/health || exit 1
+  CMD bun -e 'fetch("http://127.0.0.1:4290/api/health").then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))'
 
 ENTRYPOINT ["/usr/bin/tini", "--", "/entrypoint.sh"]

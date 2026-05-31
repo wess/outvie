@@ -1,7 +1,7 @@
 import { Badge, Box, Center, Group, Loader, Stack, Text } from "@mantine/core"
+import type { Game } from "@outvie/core"
 import { IconDeviceGamepad } from "@tabler/icons-react"
 import { useEffect, useRef, useState } from "react"
-import type { Game } from "@outvie/core"
 import { romUrl } from "../api/index.ts"
 import { mountLocalPlayer, mountRemotePlayer, type Player } from "../emulator/index.ts"
 import { usePlayer } from "./context.tsx"
@@ -19,6 +19,10 @@ export const Stage = ({ game, mode, onModeChange }: Props) => {
   const [loading, setLoading] = useState(true)
   const { setPlayer } = usePlayer()
 
+  // Key the mount on game.id, not the whole game object — only a different game
+  // should tear down and re-create the emulator; an unrelated game object identity
+  // change must not.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentional, see above
   useEffect(() => {
     let cancelled = false
     const canvas = canvasRef.current
@@ -69,9 +73,10 @@ export const Stage = ({ game, mode, onModeChange }: Props) => {
 
   return (
     <Box style={{ position: "relative", height: "100%", overflow: "hidden" }} className="outvie-player">
-      {/* No inline width/height — global.css clamps with max-width /
-          max-height + object-fit: contain so the picture stays inside
-          the cell the play page allocates on any monitor size. */}
+      {/* No inline width/height — global.css sizes the canvas to fill
+          this cell and uses object-fit: contain to scale the picture up
+          or down (aspect-preserved) on any monitor size, the way a
+          remote-desktop viewport does. */}
       <canvas ref={canvasRef} />
       <Group pos="absolute" top={12} left={12} gap={6} wrap="nowrap">
         <Badge size="xs" radius="sm" variant="light" color={mode === "stream" ? "violet" : "gray"}>

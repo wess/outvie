@@ -155,6 +155,7 @@ The seed walks the source, sha1-dedupes, sniffs system from header bytes, and `m
 
 ## Docs
 
+- [`AGENTS.md`](AGENTS.md) — orientation for AI/LLM coding sessions (conventions, layout, gotchas)
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — request pipeline, auth/SSO, data model
 - [`docs/DEPLOY.md`](docs/DEPLOY.md) — homelab deploy on castle/vegeta
 

@@ -13,7 +13,7 @@ export const useGamepad = (): string | null => {
     const check = (): void => {
       const pads = navigator.getGamepads?.() ?? []
       for (const p of pads) {
-        if (p && p.connected) {
+        if (p?.connected) {
           setId(p.id)
           return
         }

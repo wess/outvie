@@ -102,11 +102,25 @@ a {
 
 .outvie-player canvas {
   display: block;
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
+  /* Fill the allocated cell, then let object-fit: contain scale the
+     drawing buffer up or down to fit — like a remote-desktop / video
+     viewport. width/height: auto would instead pin the canvas to its
+     intrinsic buffer size (e.g. 256×240), leaving it tiny in the middle
+     of large monitors. The parent grid's minmax(0, 1fr) + overflow:
+     hidden keep this from overflowing the way an unconstrained
+     100% height used to. */
+  /* !important is load-bearing for local play: RetroArch/Emscripten
+     (Module.setCanvasSize, via nostalgist) writes INLINE canvas.style
+     width/height in px equal to the drawing buffer (e.g. 256×240), and
+     nostalgist patches removeProperty so it can't be cleared. Inline
+     styles beat a normal stylesheet rule, which would pin the canvas to
+     its tiny intrinsic size and strand it centered in the black cell.
+     The HTML width/height attributes still define the drawing buffer;
+     these rules govern presentation only. */
+  width: 100% !important;
+  height: 100% !important;
   object-fit: contain;
+  object-position: center;
   image-rendering: pixelated;
   background: #000;
 }
