@@ -1,9 +1,9 @@
 import { ActionIcon, Badge, Box, Group, Menu, Stack, Text } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { IconDots, IconPlayerPlayFilled, IconTrash } from "@tabler/icons-react"
 import type { Game } from "@outvie/core"
 import { systemMeta } from "@outvie/core"
+import { IconDots, IconPlayerPlayFilled, IconTrash } from "@tabler/icons-react"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Link, useNavigate } from "react-router-dom"
 import { deleteGame } from "../api/index.ts"
 import { systemColor } from "../theme/system.ts"
@@ -32,12 +32,7 @@ export const Card = ({ game }: Props) => {
 
   return (
     <Box className="outvie-card" data-system={game.system}>
-      <Box
-        component={Link}
-        to={`/play/${game.id}`}
-        style={{ display: "block" }}
-        aria-label={`play ${game.title}`}
-      >
+      <Box component={Link} to={`/play/${game.id}`} style={{ display: "block" }} aria-label={`play ${game.title}`}>
         <Box className="outvie-art" data-system={game.system}>
           <span className="outvie-art-mark">{meta.shortName}</span>
         </Box>
@@ -54,10 +49,7 @@ export const Card = ({ game }: Props) => {
               </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
-              <Menu.Item
-                leftSection={<IconPlayerPlayFilled size={14} />}
-                onClick={() => nav(`/play/${game.id}`)}
-              >
+              <Menu.Item leftSection={<IconPlayerPlayFilled size={14} />} onClick={() => nav(`/play/${game.id}`)}>
                 Play
               </Menu.Item>
               <Menu.Item

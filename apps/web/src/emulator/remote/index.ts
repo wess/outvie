@@ -1,8 +1,8 @@
 import { decompress as zstdDecompress } from "fzstd"
-import type { Player, PlayerMount } from "../index.ts"
 import { createStreamSession, destroyStreamSession, type StreamSession } from "../../api/index.ts"
+import type { Player, PlayerMount } from "../index.ts"
+import { type AudioSink, createAudioSink } from "./audio.ts"
 import { attachInputBridge } from "./input.ts"
-import { createAudioSink, type AudioSink } from "./audio.ts"
 
 type Hello = {
   type: "hello"

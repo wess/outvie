@@ -9,18 +9,7 @@ export const theme: MantineThemeOverride = createTheme({
     fontWeight: "700",
   },
   colors: {
-    nes: [
-      "#fde7e7",
-      "#f9c1c1",
-      "#f59595",
-      "#f06868",
-      "#e94747",
-      "#d62828",
-      "#b51d1d",
-      "#911414",
-      "#6d0d0d",
-      "#480606",
-    ],
+    nes: ["#fde7e7", "#f9c1c1", "#f59595", "#f06868", "#e94747", "#d62828", "#b51d1d", "#911414", "#6d0d0d", "#480606"],
     snes: [
       "#ece6ff",
       "#d2c5fa",

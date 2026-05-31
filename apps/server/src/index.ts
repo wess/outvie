@@ -28,11 +28,7 @@ const fetchHandler = async (req: Request, server: any): Promise<Response | undef
   // /api/* and the SSO routes (/auth/sso/login, /auth/sso/callback,
   // /auth/sso/logout, /auth/sso/backchannel-logout) both go through the
   // atlas router. SPA serves everything else.
-  if (
-    url.pathname === "/api" ||
-    url.pathname.startsWith("/api/") ||
-    url.pathname.startsWith("/auth/sso/")
-  ) {
+  if (url.pathname === "/api" || url.pathname.startsWith("/api/") || url.pathname.startsWith("/auth/sso/")) {
     const res = await apiHandler(req)
     return withCors(res, cfg.webOrigin)
   }

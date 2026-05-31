@@ -32,21 +32,23 @@ const safeJoin = (root: string, requested: string): string | null => {
   return joined
 }
 
-export const spa = (root: string) => async (req: Request): Promise<Response> => {
-  const url = new URL(req.url)
-  const requested = url.pathname === "/" ? "/index.html" : url.pathname
-  const path = safeJoin(root, requested)
+export const spa =
+  (root: string) =>
+  async (req: Request): Promise<Response> => {
+    const url = new URL(req.url)
+    const requested = url.pathname === "/" ? "/index.html" : url.pathname
+    const path = safeJoin(root, requested)
 
-  if (path) {
-    const file = Bun.file(path)
-    if (await file.exists()) {
-      return new Response(file, { headers: { "content-type": contentTypeFor(path) } })
+    if (path) {
+      const file = Bun.file(path)
+      if (await file.exists()) {
+        return new Response(file, { headers: { "content-type": contentTypeFor(path) } })
+      }
     }
-  }
 
-  const fallback = Bun.file(join(root, "index.html"))
-  if (await fallback.exists()) {
-    return new Response(fallback, { headers: { "content-type": "text/html; charset=utf-8" } })
+    const fallback = Bun.file(join(root, "index.html"))
+    if (await fallback.exists()) {
+      return new Response(fallback, { headers: { "content-type": "text/html; charset=utf-8" } })
+    }
+    return new Response("Not Found", { status: 404 })
   }
-  return new Response("Not Found", { status: 404 })
-}

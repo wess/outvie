@@ -12,11 +12,11 @@ import {
   TextInput,
   Title,
 } from "@mantine/core"
-import { useQuery } from "@tanstack/react-query"
+import type { Game, System } from "@outvie/core"
 import { IconCloudUpload, IconPlus, IconSearch, IconX } from "@tabler/icons-react"
+import { useQuery } from "@tanstack/react-query"
 import { useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "react-router-dom"
-import type { Game, System } from "@outvie/core"
 import { listGames } from "../api/index.ts"
 import { Empty } from "./empty.tsx"
 import { Grid } from "./grid.tsx"
@@ -65,19 +65,10 @@ export const Library = () => {
     <Container size="xl" py={{ base: "sm", sm: "md" }} px={{ base: "sm", sm: "md" }}>
       <Stack gap="md" mb={{ base: "md", sm: "xl" }}>
         <Stack gap={4}>
-          <Text
-            size="xs"
-            c="dimmed"
-            tt="uppercase"
-            fw={600}
-            style={{ letterSpacing: "0.14em" }}
-          >
+          <Text size="xs" c="dimmed" tt="uppercase" fw={600} style={{ letterSpacing: "0.14em" }}>
             Your Library
           </Text>
-          <Title
-            order={1}
-            style={{ fontSize: "clamp(26px, 6vw, 36px)", letterSpacing: "-0.025em" }}
-          >
+          <Title order={1} style={{ fontSize: "clamp(26px, 6vw, 36px)", letterSpacing: "-0.025em" }}>
             Pick a game
           </Title>
         </Stack>
@@ -90,12 +81,7 @@ export const Library = () => {
           leftSection={<IconSearch size={16} />}
           rightSection={
             search ? (
-              <ActionIcon
-                variant="subtle"
-                color="gray"
-                onClick={() => setSearch("")}
-                aria-label="clear search"
-              >
+              <ActionIcon variant="subtle" color="gray" onClick={() => setSearch("")} aria-label="clear search">
                 <IconX size={14} />
               </ActionIcon>
             ) : null
@@ -105,12 +91,7 @@ export const Library = () => {
           autoCapitalize="off"
           spellCheck={false}
         />
-        <Group
-          gap="sm"
-          wrap="wrap"
-          justify={{ base: "flex-start", sm: "flex-end" } as never}
-          style={{ rowGap: 8 }}
-        >
+        <Group gap="sm" wrap="wrap" justify={{ base: "flex-start", sm: "flex-end" } as never} style={{ rowGap: 8 }}>
           <SegmentedControl
             value={filter}
             onChange={(v) => setFilter(v as Filter)}

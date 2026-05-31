@@ -12,10 +12,7 @@ export const Shell = ({ children }: Props) => {
   const user = getUser()
 
   return (
-    <AppShell
-      header={{ height: inGame ? 56 : 64 }}
-      padding={inGame ? 0 : { base: "sm", sm: "lg" }}
-    >
+    <AppShell header={{ height: inGame ? 56 : 64 }} padding={inGame ? 0 : { base: "sm", sm: "lg" }}>
       <AppShell.Header
         withBorder={false}
         style={{
@@ -27,16 +24,8 @@ export const Shell = ({ children }: Props) => {
           height: "calc(var(--app-shell-header-height, 64px) + env(safe-area-inset-top))",
         }}
       >
-        <Group
-          h={inGame ? 56 : 64}
-          px={{ base: "md", sm: "lg" }}
-          justify="space-between"
-          wrap="nowrap"
-        >
-          <Link
-            to="/"
-            style={{ textDecoration: "none", color: "inherit", minWidth: 0, flex: "1 1 auto" }}
-          >
+        <Group h={inGame ? 56 : 64} px={{ base: "md", sm: "lg" }} justify="space-between" wrap="nowrap">
+          <Link to="/" style={{ textDecoration: "none", color: "inherit", minWidth: 0, flex: "1 1 auto" }}>
             <Group gap="sm" wrap="nowrap" style={{ minWidth: 0 }}>
               <Box
                 w={36}
@@ -52,12 +41,7 @@ export const Shell = ({ children }: Props) => {
                 <IconDeviceGamepad2 size={20} color="#fff" />
               </Box>
               <div style={{ minWidth: 0 }}>
-                <Title
-                  order={4}
-                  fw={700}
-                  lh={1}
-                  style={{ letterSpacing: "-0.02em", whiteSpace: "nowrap" }}
-                >
+                <Title order={4} fw={700} lh={1} style={{ letterSpacing: "-0.02em", whiteSpace: "nowrap" }}>
                   Outvie
                 </Title>
                 <Text size="xs" c="dimmed" lh={1.4} truncate>

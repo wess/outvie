@@ -1,7 +1,7 @@
 import { Button, Center, Loader, Stack, Text, Title } from "@mantine/core"
 import { useEffect, useState } from "react"
 import { Route, Routes } from "react-router-dom"
-import { adoptToken, type AuthUser, getUser, ssoLogin } from "../api/auth.ts"
+import { type AuthUser, adoptToken, getUser, ssoLogin } from "../api/auth.ts"
 import { Library } from "../library/index.tsx"
 import { Play } from "../play/index.tsx"
 import { Shell } from "./shell.tsx"

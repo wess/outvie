@@ -1,5 +1,5 @@
-import { Nostalgist } from "nostalgist"
 import { systemMeta } from "@outvie/core"
+import { Nostalgist } from "nostalgist"
 import type { Player, PlayerMount } from "../index.ts"
 
 export const mountLocalPlayer = async ({ canvas, game, romUrl, onError }: PlayerMount): Promise<Player> => {

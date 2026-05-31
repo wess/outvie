@@ -27,9 +27,7 @@ export const getGame = async (id: string): Promise<Game> =>
 // since it lives only in memory and the URL never persists.
 export const romUrl = (id: string): string => {
   const t = getToken()
-  return t
-    ? `${base}/api/games/${id}/rom?token=${encodeURIComponent(t)}`
-    : `${base}/api/games/${id}/rom`
+  return t ? `${base}/api/games/${id}/rom?token=${encodeURIComponent(t)}` : `${base}/api/games/${id}/rom`
 }
 
 export const deleteGame = async (id: string): Promise<void> => {
@@ -95,12 +93,7 @@ export const listSaves = async (gameId: string): Promise<GameSave[]> => {
   return body.saves
 }
 
-export const uploadSave = async (
-  gameId: string,
-  slot: number,
-  blob: Blob,
-  label?: string,
-): Promise<GameSave> => {
+export const uploadSave = async (gameId: string, slot: number, blob: Blob, label?: string): Promise<GameSave> => {
   const qs = label ? `?label=${encodeURIComponent(label)}` : ""
   const res = await fetch(`${base}/api/games/${gameId}/saves/${slot}${qs}`, {
     method: "POST",

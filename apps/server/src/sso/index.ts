@@ -6,12 +6,7 @@ import { hash } from "@atlas/auth"
 import type { Connection } from "@atlas/db"
 import { from } from "@atlas/db"
 import type { Conn } from "@atlas/server"
-import {
-  ensureSsoStateTable,
-  type IdTokenClaims,
-  mountSso,
-  type SsoConfig,
-} from "@atlas/sso"
+import { ensureSsoStateTable, type IdTokenClaims, mountSso, type SsoConfig } from "@atlas/sso"
 import { issueToken } from "../auth/index.ts"
 
 type SyncedUser = {
@@ -30,8 +25,7 @@ const slugifyUsername = (raw: string): string =>
     .slice(0, 39) || "user"
 
 const claimUsername = (claims: IdTokenClaims): string => {
-  const raw =
-    claims.preferred_username ?? (claims.email ? claims.email.split("@")[0] : null)
+  const raw = claims.preferred_username ?? (claims.email ? claims.email.split("@")[0] : null)
   if (!raw) throw new Error("ID token lacks preferred_username and email")
   return slugifyUsername(String(raw))
 }
@@ -41,8 +35,7 @@ const claimEmail = (claims: IdTokenClaims): string => {
   return String(claims.email).toLowerCase()
 }
 
-const placeholderHash = (): Promise<string> =>
-  hash(`outvie-sso-placeholder-${Math.random().toString(36)}`)
+const placeholderHash = (): Promise<string> => hash(`outvie-sso-placeholder-${Math.random().toString(36)}`)
 
 const upsertUser = async (db: Connection, claims: IdTokenClaims): Promise<SyncedUser> => {
   const email = claimEmail(claims)
@@ -73,16 +66,12 @@ const upsertUser = async (db: Connection, claims: IdTokenClaims): Promise<Synced
 
   // First user to sign in becomes owner. Single-tenant homelab; the
   // "owner" badge gates admin features (none for now, future-proofed).
-  const existing = (await db.one(
-    from("users").select("id"),
-  )) as { id: number } | null
+  const existing = (await db.one(from("users").select("id"))) as { id: number } | null
   const isOwner = !existing
 
   const password = await placeholderHash()
   const inserted = (await db.execute(
-    from("users")
-      .insert({ email, username, name, password, is_owner: isOwner })
-      .returning("id", "is_owner"),
+    from("users").insert({ email, username, name, password, is_owner: isOwner }).returning("id", "is_owner"),
   )) as Array<{ id: number; is_owner: boolean }>
   const row = inserted[0]
   if (!row) throw new Error("user insert failed")

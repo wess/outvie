@@ -27,8 +27,8 @@ export const Empty = ({ label, onUpload }: Props) => (
       <Stack gap={4} align="center">
         <Text fw={600}>{label}</Text>
         <Text size="sm" c="dimmed" maw={420} ta="center">
-          Drop .nes, .sfc or .smc files to add them to your library. Files stream straight to the server — no size limits, no
-          timeouts.
+          Drop .nes, .sfc or .smc files to add them to your library. Files stream straight to the server — no size
+          limits, no timeouts.
         </Text>
       </Stack>
       <Button

@@ -1,9 +1,9 @@
 import { mkdir } from "node:fs/promises"
 import { resolve } from "node:path"
-import { connect, type Connection } from "@atlas/db"
+import { type Connection, connect } from "@atlas/db"
 import { migrate } from "@atlas/migrate"
 import { createStore, paths, type Store } from "@outvie/library"
-import { config, type Config } from "./config.ts"
+import { type Config, config } from "./config.ts"
 
 export type AppState = {
   cfg: Config

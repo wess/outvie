@@ -39,21 +39,15 @@ export const createStore = (db: Connection): Store => {
       if (opts?.ownerId !== undefined) {
         q = q.where((b) => b("owner_id").equals(opts.ownerId as number))
       }
-      const rows = (await db.all(
-        q.orderBy(raw("LOWER(title)"), "ASC"),
-      )) as Row[]
+      const rows = (await db.all(q.orderBy(raw("LOWER(title)"), "ASC"))) as Row[]
       return rows.map(toGame)
     },
     get: async (id) => {
-      const row = (await db.one(
-        from("games").where((b) => b("id").equals(id)),
-      )) as Row | null
+      const row = (await db.one(from("games").where((b) => b("id").equals(id)))) as Row | null
       return row ? toGame(row) : null
     },
     getBySha1: async (sha1) => {
-      const row = (await db.one(
-        from("games").where((b) => b("sha1").equals(sha1)),
-      )) as Row | null
+      const row = (await db.one(from("games").where((b) => b("sha1").equals(sha1)))) as Row | null
       return row ? toGame(row) : null
     },
     insert: async (g, ownerId = null) => {
@@ -71,7 +65,11 @@ export const createStore = (db: Connection): Store => {
       )
     },
     remove: async (id) => {
-      await db.execute(from("games").where((b) => b("id").equals(id)).del())
+      await db.execute(
+        from("games")
+          .where((b) => b("id").equals(id))
+          .del(),
+      )
     },
   }
 }

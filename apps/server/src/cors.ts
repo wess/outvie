@@ -1,4 +1,4 @@
-import { putHeader, type PipeFn } from "@atlas/server"
+import { type PipeFn, putHeader } from "@atlas/server"
 
 export const cors =
   (origin: string): PipeFn =>
