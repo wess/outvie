@@ -1,10 +1,15 @@
-import { Button, Center, Loader, Stack, Text, Title } from "@mantine/core"
-import { useEffect, useState } from "react"
+import { Center, Loader, Stack, Text } from "@mantine/core"
+import { lazy, Suspense, useEffect, useState } from "react"
 import { Route, Routes } from "react-router-dom"
-import { type AuthUser, adoptToken, getUser, ssoLogin } from "../api/auth.ts"
+import { type AuthUser, adoptToken, getUser } from "../api/auth.ts"
 import { Library } from "../library/index.tsx"
-import { Play } from "../play/index.tsx"
+import { Login } from "./login.tsx"
 import { Shell } from "./shell.tsx"
+
+// The player pulls in the WASM libretro emulator (nostalgist) and its
+// decompression deps. Loading it on demand keeps the library/home route's
+// bundle small for users who never open a game.
+const Play = lazy(() => import("../play/index.tsx").then((m) => ({ default: m.Play })))
 
 type Phase = "adopting" | "ready" | "anonymous"
 
@@ -52,41 +57,36 @@ export const App = () => {
     )
   }
 
-  if (phase === "anonymous") return <SignedOut />
+  if (phase === "anonymous") {
+    return (
+      <Login
+        onAuthed={(u) => {
+          setUser(u)
+          setPhase("ready")
+        }}
+      />
+    )
+  }
 
   return (
     <Shell>
       <Routes>
         <Route path="/" element={<Library />} />
-        <Route path="/play/:id" element={<Play />} />
+        <Route
+          path="/play/:id"
+          element={
+            <Suspense
+              fallback={
+                <Center h="100%">
+                  <Loader />
+                </Center>
+              }
+            >
+              <Play />
+            </Suspense>
+          }
+        />
       </Routes>
     </Shell>
   )
 }
-
-// First-screen gate when no JWT is in localStorage. Hands the browser
-// to the SSO start endpoint, which 302s to castle; castle auto-approves
-// (you're already signed in on vegeta.local) and redirects back to
-// /auth/sso/callback?code=… → /#token=<jwt>.
-const SignedOut = () => (
-  <Center mih="100dvh" p="md">
-    <Stack align="center" gap="lg" maw={420} ta="center">
-      <Title order={2} fw={700} style={{ letterSpacing: "-0.02em" }}>
-        Outvie
-      </Title>
-      <Text c="dimmed" size="sm">
-        Sign in with your Castle account to access your library.
-      </Text>
-      <Button
-        size="md"
-        variant="gradient"
-        gradient={{ from: "violet", to: "grape", deg: 130 }}
-        radius="md"
-        onClick={() => ssoLogin()}
-        fullWidth
-      >
-        Sign in with Castle
-      </Button>
-    </Stack>
-  </Center>
-)

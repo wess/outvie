@@ -16,5 +16,15 @@ export default defineConfig({
   build: {
     target: "esnext",
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ["react", "react-dom", "react-router-dom"],
+          mantine: ["@mantine/core", "@mantine/hooks", "@mantine/notifications", "@tabler/icons-react"],
+          query: ["@tanstack/react-query"],
+          emulator: ["nostalgist", "fzstd"],
+        },
+      },
+    },
   },
 })

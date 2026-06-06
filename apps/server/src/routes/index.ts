@@ -1,5 +1,6 @@
 import type { Route } from "@atlas/server"
 import { authRoutes } from "../auth/index.ts"
+import { localAuthRoutes } from "../auth/local.ts"
 import { setupOutvieSso } from "../sso/index.ts"
 import { app } from "../state.ts"
 import { gamesRoutes } from "./games.ts"
@@ -27,6 +28,9 @@ export const buildRoutes = async (): Promise<Route[]> => {
   return [
     ...healthRoutes,
     ...authRoutes(cfg.secret),
+    // Local password login + first-run owner setup. The default sign-in
+    // path so a fresh install works without an external IdP.
+    ...localAuthRoutes(cfg.secret),
     ...ssoRoutes,
     // Saves routes are registered BEFORE gamesRoutes because gamesRoutes
     // owns `/api/games/:id` (which would otherwise gobble `/api/games/:id/saves`).

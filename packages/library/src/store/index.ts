@@ -2,11 +2,19 @@ import type { Connection } from "@atlas/db"
 import { from, raw } from "@atlas/db"
 import type { Game, System } from "@outvie/core"
 
+// Editable metadata fields for an existing game. Only title and system are
+// user-mutable; id/sha1/filename/size are derived from the ingested ROM.
+export type GamePatch = {
+  title?: string
+  system?: System
+}
+
 export type Store = {
   list: (opts?: { system?: System; ownerId?: number }) => Promise<Game[]>
   get: (id: string) => Promise<Game | null>
   getBySha1: (sha1: string) => Promise<Game | null>
   insert: (game: Game, ownerId?: number | null) => Promise<void>
+  update: (id: string, patch: GamePatch) => Promise<Game | null>
   remove: (id: string) => Promise<void>
 }
 
@@ -63,6 +71,20 @@ export const createStore = (db: Connection): Store => {
           added_at: g.addedAt,
         }),
       )
+    },
+    update: async (id, patch) => {
+      const changes: Record<string, string> = {}
+      if (patch.title !== undefined) changes.title = patch.title
+      if (patch.system !== undefined) changes.system = patch.system
+      if (Object.keys(changes).length > 0) {
+        await db.execute(
+          from("games")
+            .where((b) => b("id").equals(id))
+            .update(changes),
+        )
+      }
+      const row = (await db.one(from("games").where((b) => b("id").equals(id)))) as Row | null
+      return row ? toGame(row) : null
     },
     remove: async (id) => {
       await db.execute(

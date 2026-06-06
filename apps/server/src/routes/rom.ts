@@ -27,6 +27,22 @@ const romGuard = (secret: string) =>
     }
   })
 
+// Parse an HTTP Range header against a known resource size. Returns a
+// resolved [start, end] (inclusive) for a 206 response, or null to fall
+// back to a full 200. Handles open-ended `bytes=N-`, clamps the end to the
+// last byte, and rejects ranges where start > end or the header is malformed.
+export type ResolvedRange = { start: number; end: number }
+
+export const computeRange = (range: string | null, size: number): ResolvedRange | null => {
+  if (!range) return null
+  const match = /bytes=(\d+)-(\d*)/.exec(range)
+  if (!match) return null
+  const start = Number(match[1])
+  const end = match[2] ? Math.min(Number(match[2]), size - 1) : size - 1
+  if (start > end) return null
+  return { start, end }
+}
+
 const setHeaders = (c: Conn, entries: Record<string, string>): Conn => {
   let next = c
   for (const [k, v] of Object.entries(entries)) next = putHeader(next, k, v)
@@ -62,20 +78,15 @@ export const romRoutes = (secret: string) => [
         "content-disposition": `attachment; filename="${encodeURIComponent(game.filename)}"`,
       })
 
-      if (range) {
-        const match = /bytes=(\d+)-(\d*)/.exec(range)
-        if (match) {
-          const start = Number(match[1])
-          const end = match[2] ? Math.min(Number(match[2]), size - 1) : size - 1
-          if (start <= end) {
-            const sliced = file.slice(start, end + 1)
-            const ranged = setHeaders(withMeta, {
-              "content-range": `bytes ${start}-${end}/${size}`,
-              "content-length": String(end - start + 1),
-            })
-            return sendStream(ranged, 206, sliced.stream())
-          }
-        }
+      const resolved = computeRange(range, size)
+      if (resolved) {
+        const { start, end } = resolved
+        const sliced = file.slice(start, end + 1)
+        const ranged = setHeaders(withMeta, {
+          "content-range": `bytes ${start}-${end}/${size}`,
+          "content-length": String(end - start + 1),
+        })
+        return sendStream(ranged, 206, sliced.stream())
       }
 
       const final = putHeader(withMeta, "content-length", String(size))

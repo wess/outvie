@@ -80,3 +80,42 @@ export const ssoLogin = (returnTo?: string): void => {
   if (returnTo) url.searchParams.set("return_to", returnTo)
   window.location.assign(url.toString())
 }
+
+type Session = { token: string; user: AuthUser }
+
+// First-run probe. Tells the login screen whether to offer "create owner
+// account" (fresh install) or the password login form.
+export const needsSetup = async (): Promise<boolean> => {
+  try {
+    const res = await fetch("/api/auth/setup")
+    if (!res.ok) return false
+    const body = (await res.json()) as { needsSetup: boolean }
+    return Boolean(body.needsSetup)
+  } catch {
+    return false
+  }
+}
+
+const startSession = async (path: string, body: unknown): Promise<AuthUser> => {
+  const res = await fetch(path, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    const err = (await res.json().catch(() => ({}))) as { error?: string }
+    throw new Error(err.error ?? "request_failed")
+  }
+  const { token, user } = (await res.json()) as Session
+  setSession(token, user)
+  return user
+}
+
+// Local owner-account login (no external IdP). `login` accepts email or
+// username.
+export const passwordLogin = (login: string, password: string): Promise<AuthUser> =>
+  startSession("/api/auth/login", { login, password })
+
+// First-run owner creation. Only succeeds while the users table is empty.
+export const setupOwner = (email: string, password: string, name?: string): Promise<AuthUser> =>
+  startSession("/api/auth/setup", { email, password, name })

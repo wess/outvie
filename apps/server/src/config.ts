@@ -16,6 +16,11 @@ export const config = () =>
     ssoClientId: env("SSO_CLIENT_ID", { default: "" }),
     ssoClientSecret: env("SSO_CLIENT_SECRET", { default: "" }),
     appUrl: env("APP_URL", { default: "http://outvie.local" }),
+    // Local owner-account seed. When both are set and the users table is
+    // empty, the owner is created at boot so a fresh install can log in
+    // without an external IdP.
+    ownerEmail: env("OWNER_EMAIL", { default: "" }),
+    ownerPassword: env("OWNER_PASSWORD", { default: "" }),
   })
 
 export type Config = ReturnType<typeof config>

@@ -1,8 +1,8 @@
 {
   "name": "outvie",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "private": true,
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "workspaces": [
     "packages/*",
@@ -21,6 +21,7 @@
     "docker:down": "docker compose down",
     "check": "bunx biome check packages/ apps/",
     "tidy": "bunx biome check --write packages/ apps/",
+    "typecheck": "bunx tsc --noEmit -p tsconfig.json",
     "test": "bun test"
   },
   "dependencies": {
