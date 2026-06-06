@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Outvie — a self-hosted retro-game library for the household</title>
+    <meta
+      name="description"
+      content="Outvie is a self-hosted retro-game library. Upload your NES / SNES / Genesis ROMs once, then play them in any browser on any device — with controller support, per-user save states, and SSO."
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <style>:root{--accent:#7c5cff;--accent2:#19c6c0}</style>
+  </head>
+  <body>
+    <!-- nav -->
+    <nav class="nav">
+      <div class="wrap">
+        <a class="brand" href="index.html"><span class="mark">▸</span> Outvie</a>
+        <button class="navtoggle" aria-label="Menu" data-nav>☰</button>
+        <div class="navlinks" data-navlinks>
+          <a href="#features">Features</a>
+          <a href="#architecture">Architecture</a>
+          <a href="docs.html">Docs</a>
+          <a class="btn primary" href="https://github.com/wess/outvie">GitHub</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- hero -->
+    <header class="hero">
+      <div class="wrap">
+        <span class="pill"><span class="dot"></span> Self-hosted · all-WASM by default · built on Atlas</span>
+        <h1>Your cartridge closet, <span class="accent">playable in any browser</span>.</h1>
+        <p class="lead">
+          Outvie is a self-hosted retro-game library for the household. Upload your NES, SNES, and Genesis ROMs once,
+          then play them on a phone, tablet, or big monitor — with controller support, per-user save states, and your
+          own SSO gating the library.
+        </p>
+        <div class="cta">
+          <a class="btn primary" href="#start">Get started</a>
+          <a class="btn ghost" href="https://github.com/wess/outvie">View on GitHub →</a>
+        </div>
+
+        <!-- library mockup -->
+        <div class="mock">
+          <div class="bar">
+            <span class="hash">▸</span><span>library</span>
+            <span class="muted" style="font-size: 13px">· shared · 1,500 games</span>
+            <span class="dots"><i></i><i></i><i></i></span>
+          </div>
+          <div class="body">
+            <div class="msg">
+              <div class="av">🎮</div>
+              <div>
+                <div class="who">SNES <small>nostalgist · WASM</small></div>
+                <div class="txt">Open the URL, pick a cart, and it boots in the browser — no plugins, no native install.</div>
+              </div>
+            </div>
+            <div class="msg">
+              <div class="av" style="background: linear-gradient(135deg, #7c5cff, #19c6c0)">💾</div>
+              <div>
+                <div class="who">Per-user saves <small>data/saves/&lt;userId&gt;</small></div>
+                <div class="txt">Your speedrun checkpoint and your kid's checkpoint never clobber each other.</div>
+              </div>
+            </div>
+            <div class="msg">
+              <div class="av">🦀</div>
+              <div>
+                <div class="who">Engine <small>Rust · libretro · WebSocket</small></div>
+                <div class="txt">Drop libretro cores into <span class="men">/usr/lib/libretro</span> for low-latency server-side streaming.</div>
+              </div>
+            </div>
+            <div class="msg">
+              <div class="av" style="background: linear-gradient(135deg, #7c5cff, #19c6c0)">🔐</div>
+              <div>
+                <div class="who">SSO <small>@atlas/sso · OIDC</small></div>
+                <div class="typing"><i></i><i></i><i></i> first user to sign in becomes the owner</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- features -->
+    <section class="block" id="features">
+      <div class="wrap">
+        <div class="eyebrow">Features</div>
+        <h2>Your library, your hardware, any screen.</h2>
+        <p class="sub">Everything you need to run a household retro arcade — without a microservice graveyard.</p>
+        <div class="grid">
+          <div class="card">
+            <div class="ico">🌐</div>
+            <h3>All-WASM by default</h3>
+            <p>No plugins, no native installs. Open the URL and play in any modern browser via WASM libretro.</p>
+          </div>
+          <div class="card">
+            <div class="ico">🦀</div>
+            <h3>Streaming-ready engine</h3>
+            <p>A Rust libretro frontend ships in the image. Drop in cores to stream server-side rendering over WebSockets.</p>
+          </div>
+          <div class="card">
+            <div class="ico">💾</div>
+            <h3>Per-user saves</h3>
+            <p>Save states live in a per-user folder, so each player's checkpoints stay separate and private.</p>
+          </div>
+          <div class="card">
+            <div class="ico">🎮</div>
+            <h3>Controller-aware</h3>
+            <p>The standard gamepad layout works out of the box, and the HUD shows exactly what's plugged in.</p>
+          </div>
+          <div class="card">
+            <div class="ico">🔐</div>
+            <h3>Your own SSO</h3>
+            <p>OIDC relying-party via @atlas/sso gates everything. Visitors can play; only your account manages the library.</p>
+          </div>
+          <div class="card">
+            <div class="ico">📦</div>
+            <h3>One container, one Postgres</h3>
+            <p>A single Docker image plus Postgres. ROMs on disk, metadata in the database — no service sprawl.</p>
+          </div>
+          <div class="card">
+            <div class="ico">🗂️</div>
+            <h3>Bulk ROM import</h3>
+            <p>Seed a fresh library from a folder: sha1-dedupe, sniff the system from header bytes, ~2.5s for 1,500 ROMs.</p>
+          </div>
+          <div class="card">
+            <div class="ico">⬇️</div>
+            <h3>Ranged ROM delivery</h3>
+            <p>ROM bytes stream with range support and token-scoped access, so the browser fetches only what it needs.</p>
+          </div>
+          <div class="card">
+            <div class="ico">🏠</div>
+            <h3>Homelab-native</h3>
+            <p>Built to deploy on castle/vegeta: Postgres provisioning, nginx vhosts, and OAuth client minting.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- architecture -->
+    <section class="block" id="architecture">
+      <div class="wrap">
+        <div class="eyebrow">Architecture</div>
+        <h2>A Bun API, Postgres, and ROMs on disk.</h2>
+        <div class="split">
+          <ul>
+            <li><span class="ck">✦</span><span><b>Mantine SPA</b> — React 19 + nostalgist runs WASM libretro in the browser, with the Web Gamepad API mapped to libretro inputs.</span></li>
+            <li><span class="ck">✦</span><span><b>Bun API</b> — games CRUD, ranged ROM delivery, per-user saves, and a WebSocket stream proxy, all behind JWT.</span></li>
+            <li><span class="ck">✦</span><span><b>Postgres + disk</b> — only metadata lives in Postgres; ROMs sit at <code>data/roms/&lt;system&gt;/&lt;id&gt;</code> and saves are per-user.</span></li>
+            <li><span class="ck">✦</span><span><b>Optional Rust engine</b> — a libretro frontend streams WebM video over WebSockets when cores are installed.</span></li>
+            <li><span class="ck">✦</span><span><b>SSO via Atlas</b> — @atlas/auth JWTs and @atlas/sso OIDC; Castle is the IdP in the homelab setup.</span></li>
+          </ul>
+          <div class="diagram">          browser (Mantine SPA)
+         WASM libretro · Gamepad
+                 │
+        HTTP / WS   ·   JWT
+                 │
+         outvie API (Bun)
+                 │
+      ┌──────────┼───────────┐
+   Postgres   /data     outvie-engine
+   metadata  roms/saves  (Rust · libretro)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- get started -->
+    <section class="block" id="start">
+      <div class="wrap">
+        <div class="eyebrow">Get started</div>
+        <h2>Up and running with Docker.</h2>
+        <p class="sub">Clone, copy the env file, and bring it up with Compose. The first user to sign in becomes the owner.</p>
+        <div class="code" style="margin-top: 32px; max-width: 720px">
+          <div class="top">
+            <span>terminal</span>
+            <button class="copy" data-copy>Copy</button>
+          </div>
+          <pre data-code><span class="c"># 1. clone</span>
+git clone https://github.com/wess/outvie &amp;&amp; cd outvie
+
+<span class="c"># 2. configure</span>
+cp env.example .env
+
+<span class="c"># 3. run</span>
+docker compose up -d
+open http://localhost:4290   <span class="c"># first sign-in = owner</span></pre>
+        </div>
+
+        <p class="sub" style="margin-top: 40px">Prefer to hack on it locally? Run the API and SPA from source.</p>
+        <div class="code" style="margin-top: 16px; max-width: 720px">
+          <div class="top">
+            <span>local dev</span>
+            <button class="copy" data-copy>Copy</button>
+          </div>
+          <pre data-code><span class="c"># install deps + a throwaway Postgres</span>
+bun install
+docker run -d --name pg -p 5432:5432 -e POSTGRES_PASSWORD=postgres postgres:16-alpine
+docker exec -i pg psql -U postgres -c "CREATE DATABASE outvie;"
+
+<span class="c"># run the API on :4290 and the SPA on :5174</span>
+bun run dev:server
+bun run dev:web</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- cta band -->
+    <section class="band">
+      <div class="wrap">
+        <h2>Keep your library on your hardware.</h2>
+        <p>Open source under Apache 2.0. Self-host it in your homelab and keep your games — and your saves — yours.</p>
+        <div class="cta">
+          <a class="btn primary" href="docs.html">Read the docs</a>
+          <a class="btn ghost" href="https://github.com/wess/outvie">View on GitHub →</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap">
+        <a class="brand" href="index.html"><span class="mark">▸</span> Outvie</a>
+        <div class="links">
+          <a href="docs.html">Docs</a>
+          <a href="../docs/ARCHITECTURE.md">Architecture</a>
+          <a href="../docs/DEPLOY.md">Deploy</a>
+          <a href="https://github.com/wess/outvie">GitHub</a>
+          <a href="https://github.com/wess/atlas">Atlas</a>
+        </div>
+        <span>Apache 2.0 · © 2026</span>
+      </div>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

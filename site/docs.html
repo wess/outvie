@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Documentation — Outvie</title>
+    <meta name="description" content="Documentation for Outvie: architecture, deployment, the API and endpoints, configuration, and source." />
+    <link rel="stylesheet" href="styles.css" />
+    <style>:root{--accent:#7c5cff;--accent2:#19c6c0}</style>
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="wrap">
+        <a class="brand" href="index.html"><span class="mark">▸</span> Outvie</a>
+        <button class="navtoggle" aria-label="Menu" data-nav>☰</button>
+        <div class="navlinks" data-navlinks>
+          <a href="index.html#features">Features</a>
+          <a href="index.html#architecture">Architecture</a>
+          <a href="docs.html">Docs</a>
+          <a class="btn primary" href="https://github.com/wess/outvie">GitHub</a>
+        </div>
+      </div>
+    </nav>
+
+    <header class="dochero">
+      <div class="wrap">
+        <div class="eyebrow">Documentation</div>
+        <h2 style="font-size: clamp(28px, 5vw, 40px); font-weight: 800; letter-spacing: -0.02em">Everything about Outvie.</h2>
+        <p class="sub">
+          The reference lives as Markdown in the <code>docs/</code> folder and in the repo root. Start with the
+          architecture overview, then the homelab deploy guide. Each card links straight to the source document.
+        </p>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <div class="docsection">Understand it</div>
+      <div class="docgrid">
+        <a class="doccard" href="../docs/ARCHITECTURE.md">
+          <div class="t"><span class="ico">🏗️</span> Architecture</div>
+          <p>The request pipeline, auth and SSO, the data model, and how ROMs and saves are stored on disk.</p>
+        </a>
+        <a class="doccard" href="../README.md">
+          <div class="t"><span class="ico">📖</span> Readme</div>
+          <p>What Outvie is, why it exists, the stack, the endpoint table, and the configuration reference.</p>
+        </a>
+        <a class="doccard" href="../AGENTS.md">
+          <div class="t"><span class="ico">🧭</span> Orientation</div>
+          <p>Conventions, repo layout, and gotchas for coding sessions in the Outvie monorepo.</p>
+        </a>
+      </div>
+
+      <div class="docsection">Operations</div>
+      <div class="docgrid">
+        <a class="doccard" href="../docs/DEPLOY.md">
+          <div class="t"><span class="ico">📦</span> Deploy</div>
+          <p>The homelab deploy on castle/vegeta: Postgres role provisioning, nginx vhosts, and OAuth client minting.</p>
+        </a>
+        <a class="doccard" href="../README.md">
+          <div class="t"><span class="ico">⚙️</span> Configuration</div>
+          <p>Every environment variable — port, database, SSO, data dir, and the libretro core paths.</p>
+        </a>
+        <a class="doccard" href="../README.md">
+          <div class="t"><span class="ico">🔗</span> Endpoints</div>
+          <p>The full HTTP/WS contract: games, ROM delivery, per-user saves, streaming sessions, and auth.</p>
+        </a>
+      </div>
+
+      <div class="docsection">Source</div>
+      <div class="docgrid">
+        <a class="doccard" href="https://github.com/wess/outvie">
+          <div class="t"><span class="ico">💻</span> Source</div>
+          <p>Browse the monorepo: the Bun API, the Mantine SPA, the Rust engine, scripts, and migrations.</p>
+        </a>
+        <a class="doccard" href="https://github.com/wess/outvie/issues">
+          <div class="t"><span class="ico">🐛</span> Issues</div>
+          <p>Report a bug, request a feature, or ask a question on the GitHub issue tracker.</p>
+        </a>
+        <a class="doccard" href="https://github.com/wess/atlas">
+          <div class="t"><span class="ico">🧩</span> Atlas</div>
+          <p>The toolkit behind the server, database, auth, SSO, and migrations that Outvie is built on.</p>
+        </a>
+      </div>
+    </main>
+
+    <footer style="margin-top: 60px">
+      <div class="wrap">
+        <a class="brand" href="index.html"><span class="mark">▸</span> Outvie</a>
+        <div class="links">
+          <a href="index.html">Home</a>
+          <a href="../README.md">Readme</a>
+          <a href="https://github.com/wess/outvie">GitHub</a>
+          <a href="https://github.com/wess/atlas">Atlas</a>
+        </div>
+        <span>Apache 2.0 · © 2026</span>
+      </div>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
