@@ -117,5 +117,6 @@ export const passwordLogin = (login: string, password: string): Promise<AuthUser
   startSession("/api/auth/login", { login, password })
 
 // First-run owner creation. Only succeeds while the users table is empty.
-export const setupOwner = (email: string, password: string, name?: string): Promise<AuthUser> =>
-  startSession("/api/auth/setup", { email, password, name })
+// Identified by username; email is optional on a private network.
+export const setupOwner = (username: string, password: string, name?: string): Promise<AuthUser> =>
+  startSession("/api/auth/setup", { username, password, name })

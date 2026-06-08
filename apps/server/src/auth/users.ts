@@ -48,7 +48,7 @@ export const countUsers = async (db: Connection): Promise<number> => {
 }
 
 export type CreateUserInput = {
-  email: string
+  email?: string
   password: string
   name?: string
   username?: string
@@ -56,10 +56,12 @@ export type CreateUserInput = {
 }
 
 // Create a user with a hashed password. Returns the public row (no hash).
+// Email is optional on a private network: when omitted, a unique placeholder
+// (<username>@outvie.local) is stored so the email column + lookups still work.
 export const createUser = async (db: Connection, input: CreateUserInput): Promise<UserRow> => {
-  const email = input.email.trim().toLowerCase()
-  if (!email) throw new Error("email required")
-  const username = slugifyUsername(input.username ?? email.split("@")[0] ?? "user")
+  const emailInput = input.email?.trim().toLowerCase()
+  const username = slugifyUsername(input.username ?? (emailInput ? emailInput.split("@")[0] : "") ?? "user")
+  const email = emailInput || `${username}@outvie.local`
   const name = input.name?.trim() || username
   const password = await hash(input.password)
   const inserted = (await db.execute(

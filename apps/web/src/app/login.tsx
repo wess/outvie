@@ -40,7 +40,7 @@ export const Login = ({ onAuthed }: Props) => {
           <Stack gap="sm">
             {setup && <Text size="sm">Create the owner account to finish setup.</Text>}
             <TextInput
-              label={setup ? "Owner email" : "Email or username"}
+              label={setup ? "Owner username" : "Username or email"}
               value={login}
               onChange={(e) => setLogin(e.currentTarget.value)}
               required

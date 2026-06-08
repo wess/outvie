@@ -48,17 +48,17 @@ export const localAuthRoutes = (secret: string) => [
     "/api/auth/setup",
     pipe(async (c) => {
       const body = await readJson<SetupBody>(c.request)
-      const email = body.email?.trim()
+      const username = body.username?.trim()
       const password = body.password ?? ""
-      if (!email || !password) return halt(c, 400, { error: "email_and_password_required" })
+      if (!username || !password) return halt(c, 400, { error: "username_and_password_required" })
       if (password.length < 8) return halt(c, 400, { error: "password_too_short" })
       if ((await countUsers(app().db)) > 0) return halt(c, 409, { error: "already_setup" })
 
       const user = await createUser(app().db, {
-        email,
+        email: body.email,
         password,
         name: body.name,
-        username: body.username,
+        username,
         isOwner: true,
       })
       return json(c, 201, await sessionFor(user, secret))
