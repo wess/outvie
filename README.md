@@ -164,3 +164,5 @@ The seed walks the source, sha1-dedupes, sniffs system from header bytes, and `m
 ## License
 
 Apache 2.0 — see [`LICENSE`](LICENSE).
+
+♥ [Sponsor this project](https://github.com/sponsors/wess)
