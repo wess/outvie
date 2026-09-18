@@ -1,6 +1,6 @@
 {
   "name": "outvie",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "private": true,
   "license": "Apache-2.0",
   "type": "module",
@@ -25,7 +25,7 @@
     "test": "bun test"
   },
   "dependencies": {
-    "atlas": "github:wess/atlas#main"
+    "atlas": "github:wess/atlas#v0.3.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.10",

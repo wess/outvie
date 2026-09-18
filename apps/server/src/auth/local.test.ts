@@ -42,7 +42,7 @@ describe("local auth flow", () => {
   })
 
   test("first-run setup creates the owner and returns a session", async () => {
-    const res = await postJson("/api/auth/setup", { email: "owner@test", password: "password123" })
+    const res = await postJson("/api/auth/setup", { username: "owner", email: "owner@test", password: "password123" })
     expect(res.status).toBe(201)
     const body = (await res.json()) as { token: string; user: { is_owner: boolean } }
     expect(typeof body.token).toBe("string")
@@ -50,7 +50,7 @@ describe("local auth flow", () => {
   })
 
   test("setup is closed once an owner exists", async () => {
-    const res = await postJson("/api/auth/setup", { email: "second@test", password: "password123" })
+    const res = await postJson("/api/auth/setup", { username: "second", email: "second@test", password: "password123" })
     expect(res.status).toBe(409)
   })
 
