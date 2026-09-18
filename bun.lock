@@ -21,7 +21,7 @@
       "dependencies": {
         "@outvie/core": "workspace:*",
         "@outvie/library": "workspace:*",
-        "atlas": "github:wess/atlas#main",
+        "atlas": "github:wess/atlas#v0.3.0",
       },
     },
     "apps/web": {
@@ -56,7 +56,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@outvie/core": "workspace:*",
-        "atlas": "github:wess/atlas#main",
+        "atlas": "github:wess/atlas#v0.3.0",
       },
     },
   },
@@ -411,12 +411,8 @@
 
     "zod": ["zod@4.6.5", "", {}, "sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q=="],
 
-    "@outvie/library/atlas": ["atlas@github:wess/atlas#308b65d", { "dependencies": { "zod": "^3.23.0" }, "peerDependencies": { "@mantine/core": "^7.0.0", "@mantine/form": "^7.0.0", "@mantine/hooks": "^7.0.0", "@tanstack/react-table": "^8.0.0", "lucide-react": "^0.468.0", "react": "^19.0.0", "react-dom": "^19.0.0", "typescript": "^5" }, "optionalPeers": ["@mantine/core", "@mantine/form", "@mantine/hooks", "@tanstack/react-table", "lucide-react", "react", "react-dom"] }, "wess-atlas-308b65d", "sha512-fe0HCIrerGSwgQ04kEComlzBQ9QVNOV7Q6cWKizlFxmUYW5LTeLuzC5EjYv75BJbh4setE4WK0GuHMppkyj0Bg=="],
+    "@outvie/library/atlas": ["@wess/atlas@github:wess/atlas#1aab6b5", { "dependencies": { "zod": "^4.6.5" }, "peerDependencies": { "@mantine/core": "^9.6.1", "@mantine/form": "^9.6.1", "@mantine/hooks": "^9.6.1", "@tanstack/react-table": "^9.2.4", "lucide-react": "^1.47.0", "react": "^19.3.0", "react-dom": "^19.3.0", "typescript": ">=5.9" }, "optionalPeers": ["@mantine/core", "@mantine/form", "@mantine/hooks", "@tanstack/react-table", "lucide-react", "react", "react-dom"] }, "wess-atlas-1aab6b5", "sha512-33qE9ojuLvDmHhMzFiwSh3UFdGOy/sTEx7Gajf0fvsSyW+Q2kKbJbOq7UjuinTqaK064oGiVsfnJp9hVK1meGw=="],
 
-    "@outvie/server/atlas": ["atlas@github:wess/atlas#308b65d", { "dependencies": { "zod": "^3.23.0" }, "peerDependencies": { "@mantine/core": "^7.0.0", "@mantine/form": "^7.0.0", "@mantine/hooks": "^7.0.0", "@tanstack/react-table": "^8.0.0", "lucide-react": "^0.468.0", "react": "^19.0.0", "react-dom": "^19.0.0", "typescript": "^5" }, "optionalPeers": ["@mantine/core", "@mantine/form", "@mantine/hooks", "@tanstack/react-table", "lucide-react", "react", "react-dom"] }, "wess-atlas-308b65d", "sha512-fe0HCIrerGSwgQ04kEComlzBQ9QVNOV7Q6cWKizlFxmUYW5LTeLuzC5EjYv75BJbh4setE4WK0GuHMppkyj0Bg=="],
-
-    "@outvie/library/atlas/zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
-
-    "@outvie/server/atlas/zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
+    "@outvie/server/atlas": ["@wess/atlas@github:wess/atlas#1aab6b5", { "dependencies": { "zod": "^4.6.5" }, "peerDependencies": { "@mantine/core": "^9.6.1", "@mantine/form": "^9.6.1", "@mantine/hooks": "^9.6.1", "@tanstack/react-table": "^9.2.4", "lucide-react": "^1.47.0", "react": "^19.3.0", "react-dom": "^19.3.0", "typescript": ">=5.9" }, "optionalPeers": ["@mantine/core", "@mantine/form", "@mantine/hooks", "@tanstack/react-table", "lucide-react", "react", "react-dom"] }, "wess-atlas-1aab6b5", "sha512-33qE9ojuLvDmHhMzFiwSh3UFdGOy/sTEx7Gajf0fvsSyW+Q2kKbJbOq7UjuinTqaK064oGiVsfnJp9hVK1meGw=="],
   }
 }
